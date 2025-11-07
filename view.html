@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>All Requirements - PostRequirement</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>body{font-family:Inter,system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <header class="bg-white shadow-sm sticky top-0">
+    <div class="max-w-6xl mx-auto flex justify-between items-center px-4 py-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="bg-black text-white font-bold px-3 py-1 rounded">PR</div>
+        <span class="font-semibold text-lg">PostRequirement</span>
+      </a>
+      <a href="index.html" class="text-blue-600 hover:underline">← Back</a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-4">All Requirements</h1>
+    <p class="text-sm text-gray-600 mb-6">Browse every requirement posted by users worldwide.</p>
+
+    <div id="reqList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+    const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
+
+    async function loadAll() {
+      try {
+        const res = await fetch(REST_ENDPOINT + "?select=*&order=created_at.desc", {
+          headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY }
+        });
+        const rows = await res.json();
+        render(rows);
+      } catch (err) {
+        console.error(err);
+        document.getElementById("reqList").innerHTML = "<p class='text-red-600'>Error loading data</p>";
+      }
+    }
+
+    function render(items) {
+      const c = document.getElementById("reqList");
+      c.innerHTML = "";
+      if (!items.length) {
+        c.innerHTML = "<p class='text-gray-600'>No requirements found.</p>";
+        return;
+      }
+      items.forEach(it => {
+        const img = `https://images.unsplash.com/random/400x400?sig=${it.id || Math.random()}&business,office,corporate`;
+        const div = document.createElement("div");
+        div.className = "bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow transition";
+        div.innerHTML = `
+          <img src="${img}" class="h-40 w-full object-cover">
+          <div class="p-4">
+            <h2 class="font-semibold text-lg mb-1">${escapeHtml(it.title)}</h2>
+            <p class="text-sm text-gray-600 mb-2">${escapeHtml(it.description || '')}</p>
+            <div class="flex justify-between text-xs text-gray-500">
+              <span>${escapeHtml(it.category || 'Other')}</span>
+              <span>₹${it.budget_min || 0} - ₹${it.budget_max || 0}</span>
+            </div>
+          </div>`;
+        c.appendChild(div);
+      });
+    }
+
+    function escapeHtml(s=''){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
+    loadAll();
+  </script>
+</body>
+</html>
