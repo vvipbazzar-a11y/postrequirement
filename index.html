@@ -242,7 +242,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
       const container = document.getElementById('listings');
       container.innerHTML = '';
       items.forEach(it => {
-        const imgSrc = `https://source.unsplash.com/featured/?office,${encodeURIComponent(it.category || 'business')}`;
+        const imgSrc = `https://images.unsplash.com/random/400x400?sig=${it.id || Math.random()}&business,office,corporate`;
         const card = document.createElement('div');
         card.className = "flex gap-3 bg-white border rounded p-3 items-start";
         card.innerHTML = `
@@ -326,5 +326,6 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
   </script>
 </body>
 </html>
+
 
 
