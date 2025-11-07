@@ -4,331 +4,191 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PostRequirement — Post Your Business Needs</title>
-  <meta name="description" content="PostRequirement — Post requirements & get quotes from vendors worldwide. Multilingual and business-focused."/>
-  <!-- Tailwind CDN (play) -->
+  <meta name="description" content="PostRequirement — Post requirements & get quotes from vendors worldwide."/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}</style>
+  <style>body{font-family:Inter,system-ui,sans-serif}</style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-  <!-- Top bar -->
-  <header class="bg-white shadow-sm sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="h-10 w-10 bg-black text-white rounded-lg flex items-center justify-center font-bold">PR</div>
-        <div>
-          <h1 class="text-lg font-semibold">PostRequirement</h1>
-          <div class="text-xs text-gray-500">Post • Get Quotes • Close Deals</div>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <select id="langSelect" class="rounded-md border px-2 py-1 text-sm">
-          <!-- options filled by JS -->
-        </select>
-        <a id="visitSite" class="text-sm text-blue-600 hover:underline hidden" href="#" target="_blank">Open live</a>
+<header class="bg-white shadow-sm sticky top-0 z-40">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="h-10 w-10 bg-black text-white rounded-lg flex items-center justify-center font-bold">PR</div>
+      <div>
+        <h1 class="text-lg font-semibold">PostRequirement</h1>
+        <div class="text-xs text-gray-500">Post • Get Quotes • Close Deals</div>
       </div>
     </div>
-  </header>
 
-  <!-- Hero + Form -->
-  <main class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-8">
-    <section>
-      <h2 id="heroTitle" class="text-3xl font-bold">Post your requirement. Get responses fast.</h2>
-      <p id="heroText" class="mt-3 text-gray-600">List what you need—services, products, vendors or freelancers. We notify relevant providers to contact you.</p>
+    <div class="flex items-center gap-3">
+      <select id="langSelect" class="rounded-md border px-2 py-1 text-sm"></select>
+      <a id="visitSite" class="text-sm text-blue-600 hover:underline hidden" href="#" target="_blank">Open live</a>
+    </div>
+  </div>
+</header>
 
-      <!-- AD Placeholder: Top banner -->
-      <div class="mt-6 p-3 bg-gray-100 rounded-md text-center text-sm text-gray-700">
-        <!-- Paste AdSense code here -->
-        <!-- AD-SLOT: TOP_BANNER -->
-        [Top Ad Placeholder]
-      </div>
+<main class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-8">
+  <section>
+    <h2 id="heroTitle" class="text-3xl font-bold">Post your requirement. Get responses fast.</h2>
+    <p id="heroText" class="mt-3 text-gray-600">List what you need—services, products, vendors or freelancers. We notify relevant providers to contact you.</p>
 
-      <div class="mt-8">
-        <h3 class="text-lg font-medium" id="formTitle">Post a Requirement</h3>
+    <div class="mt-6 p-3 bg-gray-100 rounded-md text-center text-sm text-gray-700">
+      [Top Ad Placeholder]
+    </div>
 
-        <form id="reqForm" class="mt-4 bg-white p-4 rounded-lg shadow-sm border">
-          <div class="grid gap-3">
-            <input id="title" placeholder="Title" class="border rounded px-3 py-2" required>
-            <select id="category" class="border rounded px-3 py-2">
-              <option value="">Select category</option>
-              <option>IT & Software</option>
-              <option>Design</option>
-              <option>Marketing</option>
-              <option>Business</option>
-              <option>Education</option>
-              <option>Manufacturing</option>
-            </select>
-            <div class="grid grid-cols-2 gap-2">
-              <input id="budgetMin" type="number" placeholder="Budget Min (₹)" class="border rounded px-3 py-2">
-              <input id="budgetMax" type="number" placeholder="Budget Max (₹)" class="border rounded px-3 py-2">
-            </div>
-            <input id="location" placeholder="Location (Optional)" class="border rounded px-3 py-2">
-            <textarea id="description" placeholder="Describe your requirement..." rows="5" class="border rounded px-3 py-2" required></textarea>
-            <div class="grid grid-cols-2 gap-2">
-              <input id="contactEmail" type="email" placeholder="Contact email" class="border rounded px-3 py-2">
-              <input id="contactPhone" type="tel" placeholder="Contact phone (optional)" class="border rounded px-3 py-2">
-            </div>
+    <div class="mt-8">
+      <h3 class="text-lg font-medium" id="formTitle">Post a Requirement</h3>
 
-            <button id="submitBtn" class="bg-black text-white rounded px-4 py-2">Post Requirement</button>
-            <div id="formMsg" class="text-sm mt-1"></div>
+      <form id="reqForm" class="mt-4 bg-white p-4 rounded-lg shadow-sm border">
+        <div class="grid gap-3">
+          <input id="title" placeholder="Title" class="border rounded px-3 py-2" required>
+          <select id="category" class="border rounded px-3 py-2">
+            <option value="">Select category</option>
+            <option>IT & Software</option>
+            <option>Design</option>
+            <option>Marketing</option>
+            <option>Business</option>
+            <option>Education</option>
+            <option>Manufacturing</option>
+          </select>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="budgetMin" type="number" placeholder="Budget Min (₹)" class="border rounded px-3 py-2">
+            <input id="budgetMax" type="number" placeholder="Budget Max (₹)" class="border rounded px-3 py-2">
           </div>
-        </form>
-      </div>
-    </section>
+          <input id="location" placeholder="Location (Optional)" class="border rounded px-3 py-2">
+          <textarea id="description" placeholder="Describe your requirement..." rows="4" class="border rounded px-3 py-2" required></textarea>
 
-    <!-- Listings + image -->
-    <section>
-      <div class="rounded-lg overflow-hidden shadow-sm bg-white">
-        <img id="heroImage" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
- alt="Business" class="w-full h-48 object-cover">
-        <div class="p-4">
-          <h4 id="latestTitle" class="text-lg font-semibold">Latest requirements</h4>
-          <p id="latestText" class="text-sm text-gray-600">Browse the most recent posted requirements from around the world.</p>
-
-          <!-- AD Placeholder: Middle -->
-          <div class="my-4 p-3 bg-gray-50 rounded text-center text-sm">
-            <!-- AD-SLOT: MIDDLE_BANNER -->
-            [Middle Ad Placeholder]
+          <div class="grid grid-cols-2 gap-2">
+            <input id="contactEmail" type="email" placeholder="Contact email" class="border rounded px-3 py-2">
+            <input id="contactPhone" type="tel" placeholder="Contact phone (optional)" class="border rounded px-3 py-2">
           </div>
 
-          <div id="listings" class="space-y-3 mt-3">
-            <!-- JS renders cards here -->
-          </div>
+          <!-- 🖼️ Image Upload -->
+          <label class="text-sm font-medium mt-2 block">Upload an image (optional):</label>
+          <input id="imageUpload" type="file" accept="image/*" class="border rounded px-3 py-2 w-full" />
 
-          <div class="mt-4 text-center">
-            <a href="view.html" class="text-sm text-blue-600">View all requirements →</a>
-          </div>
+          <button id="submitBtn" class="bg-black text-white rounded px-4 py-2 mt-2">Post Requirement</button>
+          <div id="formMsg" class="text-sm mt-1"></div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section>
+    <div class="rounded-lg overflow-hidden shadow-sm bg-white">
+      <img id="heroImage" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Business" class="w-full h-48 object-cover">
+      <div class="p-4">
+        <h4 id="latestTitle" class="text-lg font-semibold">Latest requirements</h4>
+        <p id="latestText" class="text-sm text-gray-600">Browse the most recent posted requirements from around the world.</p>
+
+        <div class="my-4 p-3 bg-gray-50 rounded text-center text-sm">
+          [Middle Ad Placeholder]
+        </div>
+
+        <div id="listings" class="space-y-3 mt-3"></div>
+        <div class="mt-4 text-center">
+          <a href="view.html" id="viewAll" class="text-sm text-blue-600">View all requirements →</a>
         </div>
       </div>
+    </div>
 
-      <!-- Footer small -->
-      <footer class="mt-6 text-xs text-gray-500">
-        <div>© <span id="year"></span> PostRequirement</div>
-        <div class="mt-2">
-          <a href="privacy.html" class="hover:underline">Privacy Policy</a> •
-<a href="contact.html" class="hover:underline">Contact</a> •
-<a href="about.html" class="hover:underline">About Us</a>
+    <footer class="mt-6 text-xs text-gray-500">
+      <div>© <span id="year"></span> PostRequirement</div>
+      <div class="mt-2">
+        <a href="privacy.html" class="hover:underline">Privacy Policy</a> •
+        <a href="contact.html" class="hover:underline">Contact</a> •
+        <a href="about.html" class="hover:underline">About Us</a>
+      </div>
+      <div class="mt-3 p-3 bg-gray-100 rounded text-center text-sm">
+        [Footer Ad Placeholder]
+      </div>
+    </footer>
+  </section>
+</main>
 
+<script>
+const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
+
+// language setup (shortened)
+const langSelect = document.getElementById('langSelect');
+['EN','HI','FR','ES'].forEach(l=>{let o=document.createElement('option');o.value=l.toLowerCase();o.textContent=l;langSelect.appendChild(o);});
+langSelect.value='en';
+document.getElementById('year').innerText=new Date().getFullYear();
+
+// fetch listings
+async function fetchListings(){
+  const res=await fetch(REST_ENDPOINT+"?select=*&order=created_at.desc&limit=6",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY}});
+  const rows=await res.json();
+  renderListings(rows);
+}
+function renderListings(items){
+  const c=document.getElementById('listings');
+  c.innerHTML="";
+  items.forEach(it=>{
+    const img = it.image_url ? it.image_url : `https://images.unsplash.com/random/400x400?sig=${it.id || Math.random()}&business,office`;
+    const d=document.createElement('div');
+    d.className="flex gap-3 bg-white border rounded p-3 items-start";
+    d.innerHTML=`
+      <img src="${img}" class="w-20 h-20 object-cover rounded">
+      <div class="flex-1">
+        <div class="flex justify-between items-start">
+          <h5 class="font-semibold">${it.title||''}</h5>
+          <div class="text-xs text-gray-500">₹${it.budget_min||'-'} - ${it.budget_max||'-'}</div>
         </div>
-        <!-- AD Placeholder: Footer -->
-        <div class="mt-3 p-3 bg-gray-100 rounded text-center text-sm">
-          <!-- AD-SLOT: FOOTER_BANNER -->
-          [Footer Ad Placeholder]
+        <div class="text-sm text-gray-600 mt-1">${(it.description||'').slice(0,120)}</div>
+        <div class="mt-2 text-xs text-gray-500 flex gap-2">
+          <span class="px-2 py-1 bg-gray-100 rounded">${it.category||'Other'}</span>
         </div>
-      </footer>
-    </section>
-  </main>
+      </div>`;
+    c.appendChild(d);
+  });
+}
 
-  <script>
-    // ---------- CONFIG ----------
-   const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co"; // replace if different
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA
-"; // replace with your anon key
-    const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
-
-    // Languages dictionary (extend as needed)
-    const translations = {
-      en: {
-        heroTitle: "Post your requirement. Get responses fast.",
-        heroText: "List what you need—services, products, vendors or freelancers. We notify relevant providers to contact you.",
-        formTitle: "Post a Requirement",
-        latestTitle: "Latest requirements",
-        latestText: "Browse the most recent posted requirements from around the world.",
-        submitSuccess: "Requirement posted successfully!",
-        submitError: "Error posting requirement.",
-        placeholders: {
-          title: "Title",
-          description: "Describe your requirement...",
-          category: "Select category",
-          location: "Location (Optional)",
-          budgetMin: "Budget Min (₹)",
-          budgetMax: "Budget Max (₹)",
-          contactEmail: "Contact email",
-          contactPhone: "Contact phone (optional)"
-        }
-      },
-      hi: {
-        heroTitle: "Apni requirement post karein. Jaldi response paye.",
-        heroText: "Jo chahiye usko list karein—services, products, vendors ya freelancers. Hum relevant providers ko notify karte hain.",
-        formTitle: "Requirement Post karein",
-        latestTitle: "Nayi requirements",
-        latestText: "Duniya bhar se sabhi naye requirements dekhein.",
-        submitSuccess: "Requirement safalta se post ho gayi!",
-        submitError: "Requirement post karne me error.",
-        placeholders: {
-          title: "Title",
-          description: "Apni requirement yahan likhe...",
-          category: "Category chune",
-          location: "Location (Optional)",
-          budgetMin: "Budget Min (₹)",
-          budgetMax: "Budget Max (₹)",
-          contactEmail: "Contact email",
-          contactPhone: "Contact phone (optional)"
-        }
-      },
-      es: { /* Spanish */ heroTitle: "Publica tu requerimiento. Recibe respuestas rápido.", heroText:"Publica lo que necesitas—servicios, productos, proveedores o freelancers.", formTitle:"Publicar requerimiento", latestTitle:"Requerimientos recientes", latestText:"Explora los requerimientos publicados de todo el mundo.", submitSuccess:"¡Requerimiento publicado!", submitError:"Error al publicar.", placeholders: { title:"Título", description:"Describe tu requerimiento...", category:"Seleccionar categoría", location:"Ubicación (Opcional)", budgetMin:"Presupuesto mínimo (₹)", budgetMax:"Presupuesto máximo (₹)", contactEmail:"Correo electrónico", contactPhone:"Teléfono (opcional)" } },
-      fr: { /* French */ heroTitle:"Publiez votre demande. Recevez des réponses rapidement.", heroText:"Listez ce dont vous avez besoin—services, produits, fournisseurs ou freelances.", formTitle:"Publier une demande", latestTitle:"Demandes récentes", latestText:"Parcourez les demandes récentes du monde entier.", submitSuccess:"Demande publiée avec succès!", submitError:"Erreur lors de la publication.", placeholders:{ title:"Titre", description:"Décrivez votre demande...", category:"Sélectionner une catégorie", location:"Emplacement (Optionnel)", budgetMin:"Budget min (₹)", budgetMax:"Budget max (₹)", contactEmail:"Email", contactPhone:"Téléphone (optionnel)" } },
-      ar: { /* Arabic */ heroTitle:"انشر حاجتك. احصل على ردود بسرعة.", heroText:"أدرج ما تحتاجه—خدمات، منتجات، مزودون أو مستقلون.", formTitle:"انشر طلبك", latestTitle:"أحدث الطلبات", latestText:"تصفح أحدث الطلبات من جميع أنحاء العالم.", submitSuccess:"تم نشر الطلب بنجاح!", submitError:"خطأ في نشر الطلب.", placeholders:{ title:"العنوان", description:"صف طلبك...", category:"اختر الفئة", location:"الموقع (اختياري)", budgetMin:"الميزانية الدنيا (₹)", budgetMax:"الميزانية القصوى (₹)", contactEmail:"البريد الإلكتروني", contactPhone:"الهاتف (اختياري)" } },
-      pt: { /* Portuguese */ heroTitle:"Publique sua necessidade. Receba respostas rápido.", heroText:"Liste o que você precisa—serviços, produtos, fornecedores ou freelancers.", formTitle:"Publicar necessidade", latestTitle:"Últimas necessidades", latestText:"Veja as publicações recentes do mundo todo.", submitSuccess:"Necessidade publicada com sucesso!", submitError:"Erro ao publicar.", placeholders:{ title:"Título", description:"Descreva sua necessidade...", category:"Selecionar categoria", location:"Local (Opcional)", budgetMin:"Orçamento mínimo (₹)", budgetMax:"Orçamento máximo (₹)", contactEmail:"Email", contactPhone:"Telefone (opcional)" } }
-    };
-
-    const supported = Object.keys(translations);
-    const langSelect = document.getElementById('langSelect');
-
-    // populate language dropdown
-    supported.forEach(l => {
-      const opt = document.createElement('option');
-      opt.value = l;
-      opt.innerText = l.toUpperCase();
-      langSelect.appendChild(opt);
+// form submit
+const form=document.getElementById('reqForm');
+const msg=document.getElementById('formMsg');
+form.addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  msg.textContent="Uploading...";
+  let imageUrl=null;
+  const file=document.getElementById('imageUpload').files[0];
+  if(file){
+    const fileName=Date.now()+"_"+file.name;
+    const uploadRes=await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}`,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+SUPABASE_KEY,'apikey':SUPABASE_KEY,'Content-Type':file.type},
+      body:file
     });
-
-    // detect language
-    const userLang = (navigator.language || navigator.userLanguage || 'en').slice(0,2);
-    const initialLang = supported.includes(userLang) ? userLang : 'en';
-    langSelect.value = initialLang;
-
-    // helper to apply text
-    function applyLang(l) {
-      const dict = translations[l] || translations.en;
-      document.getElementById('heroTitle').innerText = dict.heroTitle;
-      document.getElementById('heroText').innerText = dict.heroText;
-      document.getElementById('formTitle').innerText = dict.formTitle;
-      document.getElementById('latestTitle').innerText = dict.latestTitle;
-      document.getElementById('latestText').innerText = dict.latestText;
-      // placeholders
-      document.getElementById('title').placeholder = dict.placeholders.title;
-      document.getElementById('description').placeholder = dict.placeholders.description;
-      document.getElementById('category').querySelector('option').innerText = dict.placeholders.category;
-      document.getElementById('location').placeholder = dict.placeholders.location;
-      document.getElementById('budgetMin').placeholder = dict.placeholders.budgetMin;
-      document.getElementById('budgetMax').placeholder = dict.placeholders.budgetMax;
-      document.getElementById('contactEmail').placeholder = dict.placeholders.contactEmail;
-      document.getElementById('contactPhone').placeholder = dict.placeholders.contactPhone;
+    if(uploadRes.ok){
+      imageUrl=`${SUPABASE_URL}/storage/v1/object/public/requirements-images/${fileName}`;
     }
+  }
+  const payload={
+    title:document.getElementById('title').value,
+    category:document.getElementById('category').value,
+    budget_min:Number(document.getElementById('budgetMin').value)||null,
+    budget_max:Number(document.getElementById('budgetMax').value)||null,
+    location:document.getElementById('location').value,
+    description:document.getElementById('description').value,
+    contact_email:document.getElementById('contactEmail').value,
+    contact_phone:document.getElementById('contactPhone').value,
+    image_url:imageUrl,
+    status:'open'
+  };
+  const res=await fetch(REST_ENDPOINT,{
+    method:'POST',
+    headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY},
+    body:JSON.stringify(payload)
+  });
+  if(res.ok){msg.textContent="✅ Requirement posted successfully!";form.reset();fetchListings();}
+  else msg.textContent="❌ Error posting requirement.";
+});
 
-    applyLang(initialLang);
+fetchListings();
+</script>
 
-    // change language on select
-    langSelect.addEventListener('change', (e) => applyLang(e.target.value));
-
-    // set year
-    document.getElementById('year').innerText = new Date().getFullYear();
-
-    // ---------- simple demo listings (load from Supabase in real) ----------
-    async function fetchListings() {
-      try {
-        const res = await fetch(REST_ENDPOINT + "?select=*&order=created_at.desc&limit=6", {
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: "Bearer " + SUPABASE_KEY
-          }
-        });
-        if (!res.ok) throw new Error("Failed to load");
-        const rows = await res.json();
-        renderListings(rows);
-      } catch (e) {
-        // fallback demo cards if supabase fails
-        renderListings([
-          { id:1, title:"Need Logo Design", category:"Design", description:"Modern logo for startup", location:"Remote", budget_min:2000, budget_max:8000 },
-          { id:2, title:"Ecommerce Website", category:"IT & Software", description:"Build Shopify/WordPress store", location:"India", budget_min:10000, budget_max:50000 }
-        ]);
-      }
-    }
-
-    function renderListings(items) {
-      const container = document.getElementById('listings');
-      container.innerHTML = '';
-      items.forEach(it => {
-        const imgSrc = `https://images.unsplash.com/random/400x400?sig=${it.id || Math.random()}&business,office,corporate`;
-        const card = document.createElement('div');
-        card.className = "flex gap-3 bg-white border rounded p-3 items-start";
-        card.innerHTML = `
-          <img src="${imgSrc}" class="w-20 h-20 object-cover rounded" />
-          <div class="flex-1">
-            <div class="flex justify-between items-start">
-              <h5 class="font-semibold">${escapeHtml(it.title || 'Untitled')}</h5>
-              <div class="text-xs text-gray-500">₹${it.budget_min || '-'} - ${it.budget_max || '-'}</div>
-            </div>
-            <div class="text-sm text-gray-600 mt-1">${escapeHtml((it.description || '').slice(0,120))}</div>
-            <div class="mt-2 text-xs text-gray-500 flex gap-2">
-              <span class="px-2 py-1 bg-gray-100 rounded">${escapeHtml(it.category || 'Other')}</span>
-              ${ it.location ? `<span class="px-2 py-1 bg-gray-100 rounded">${escapeHtml(it.location)}</span>` : ''}
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    // escape helper
-    function escapeHtml(s='') { return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-
-    // ---------- form submit ----------
-    const form = document.getElementById('reqForm');
-    const msg = document.getElementById('formMsg');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      msg.innerText = '';
-      const payload = {
-        title: document.getElementById('title').value.trim(),
-        category: document.getElementById('category').value || 'Other',
-        budget_min: document.getElementById('budgetMin').value ? Number(document.getElementById('budgetMin').value) : null,
-        budget_max: document.getElementById('budgetMax').value ? Number(document.getElementById('budgetMax').value) : null,
-        location: document.getElementById('location').value.trim(),
-        description: document.getElementById('description').value.trim(),
-        contact_email: document.getElementById('contactEmail').value.trim() || null,
-        contact_phone: document.getElementById('contactPhone').value.trim() || null,
-        status: "open"
-      };
-
-      // basic validation
-      if (!payload.title || !payload.description) {
-        msg.innerHTML = '<span class="text-red-600">Title and description required</span>';
-        return;
-      }
-
-      try {
-        const res = await fetch(REST_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_KEY,
-            'Authorization': 'Bearer ' + SUPABASE_KEY,
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error('Network error');
-        msg.innerHTML = '<span class="text-green-600">'+ (translations[langSelect.value].submitSuccess) +'</span>';
-        form.reset();
-        fetchListings(); // refresh
-      } catch (err) {
-        console.error(err);
-        msg.innerHTML = '<span class="text-red-600">'+ (translations[langSelect.value].submitError) +'</span>';
-      }
-    });
-
-    // initial listings load
-    fetchListings();
-
-    // expose 'visit' link if using vercel domain
-    (function setVisit() {
-      const host = location.hostname;
-      if (host && host.includes('.vercel.app')) {
-        document.getElementById('visitSite').href = location.href;
-        document.getElementById('visitSite').classList.remove('hidden');
-      }
-    })();
-
-  </script>
 </body>
 </html>
-
-
-
-
-
