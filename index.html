@@ -178,11 +178,16 @@ form.addEventListener('submit',async(e)=>{
     image_url:imageUrl,
     status:'open'
   };
-  const res=await fetch(REST_ENDPOINT,{
-    method:'POST',
-    headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY},
-    body:JSON.stringify(payload)
-  });
+ const res = await fetch(REST_ENDPOINT, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY
+  },
+  body: JSON.stringify(payload)
+});
+
   if(res.ok){msg.textContent="✅ Requirement posted successfully!";form.reset();fetchListings();}
   else msg.textContent="❌ Error posting requirement.";
 });
@@ -192,3 +197,4 @@ fetchListings();
 
 </body>
 </html>
+
