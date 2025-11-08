@@ -24,40 +24,15 @@
 </header>
 
 <main class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-8">
+
+  <!-- LEFT SECTION -->
   <section>
     <h2 class="text-2xl font-bold mb-4">Browse by Category</h2>
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
-  <div class="border rounded-lg overflow-hidden hover:shadow-lg transition">
-    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" class="h-32 w-full object-cover">
-    <div class="p-2 text-center font-medium">IT & Software</div>
-  </div>
+    <div id="categoryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
+      <!-- Categories dynamically loaded -->
+    </div>
 
-  <div class="border rounded-lg overflow-hidden hover:shadow-lg transition">
-    <img src="https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=400&q=80" class="h-32 w-full object-cover">
-    <div class="p-2 text-center font-medium">Design</div>
-  </div>
-
-  <div class="border rounded-lg overflow-hidden hover:shadow-lg transition">
-    <img src="https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=400&q=80" class="h-32 w-full object-cover">
-    <div class="p-2 text-center font-medium">Marketing</div>
-  </div>
-
-  <div class="border rounded-lg overflow-hidden hover:shadow-lg transition">
-    <img src="https://images.unsplash.com/photo-1508385082359-f38ae991e8f1?auto=format&fit=crop&w=400&q=80" class="h-32 w-full object-cover">
-    <div class="p-2 text-center font-medium">Business</div>
-  </div>
-
-  <div class="border rounded-lg overflow-hidden hover:shadow-lg transition">
-    <img src="https://images.unsplash.com/photo-1584697964403-2f8b1a18a8f0?auto=format&fit=crop&w=400&q=80" class="h-32 w-full object-cover">
-    <div class="p-2 text-center font-medium">Education</div>
-  </div>
-
-  <div class="border rounded-lg overflow-hidden hover:shadow-lg transition">
-    <img src="https://images.unsplash.com/photo-1581092787766-5ef1b2ab1b36?auto=format&fit=crop&w=400&q=80" class="h-32 w-full object-cover">
-    <div class="p-2 text-center font-medium">Manufacturing</div>
-  </div>
-</div>
-
+    <h2 class="text-3xl font-bold">Post your requirement. Get responses fast.</h2>
     <p class="mt-3 text-gray-600">List what you need—services, products, vendors or freelancers. We notify relevant providers to contact you.</p>
 
     <div class="mt-8">
@@ -97,6 +72,7 @@
     </div>
   </section>
 
+  <!-- RIGHT SECTION -->
   <section>
     <div class="rounded-lg overflow-hidden shadow-sm bg-white">
       <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Business" class="w-full h-48 object-cover">
@@ -110,6 +86,7 @@
       <div>© <span id="year"></span> PostRequirement</div>
     </footer>
   </section>
+
 </main>
 
 <script>
@@ -119,10 +96,35 @@ const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
 
 document.getElementById('year').innerText = new Date().getFullYear();
 
-async function fetchListings() {
-  const res = await fetch(`${REST_ENDPOINT}?select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {
-    headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY }
+// ---- CATEGORY CARDS ----
+const categories = [
+  { name: "IT & Software", img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" },
+  { name: "Design", img: "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=400&q=80" },
+  { name: "Marketing", img: "https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=400&q=80" },
+  { name: "Business", img: "https://images.unsplash.com/photo-1508385082359-f38ae991e8f1?auto=format&fit=crop&w=400&q=80" },
+  { name: "Education", img: "https://images.unsplash.com/photo-1584697964403-2f8b1a18a8f0?auto=format&fit=crop&w=400&q=80" },
+  { name: "Manufacturing", img: "https://images.unsplash.com/photo-1581092787766-5ef1b2ab1b36?auto=format&fit=crop&w=400&q=80" }
+];
+
+function renderCategories() {
+  const c = document.getElementById("categoryGrid");
+  categories.forEach(cat => {
+    const div = document.createElement("div");
+    div.className = "border rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer";
+    div.innerHTML = `
+      <img src="${cat.img}" class="h-32 w-full object-cover">
+      <div class="p-2 text-center font-medium">${cat.name}</div>`;
+    div.addEventListener("click", () => filterByCategory(cat.name));
+    c.appendChild(div);
   });
+}
+
+// ---- FETCH REQUIREMENTS ----
+async function fetchListings(category = null) {
+  let url = `${REST_ENDPOINT}?select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
+  if (category) url = `${REST_ENDPOINT}?category=eq.${encodeURIComponent(category)}&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
+
+  const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY } });
   const rows = await res.json();
   renderListings(rows);
 }
@@ -130,6 +132,10 @@ async function fetchListings() {
 function renderListings(items) {
   const c = document.getElementById('listings');
   c.innerHTML = "";
+  if (items.length === 0) {
+    c.innerHTML = `<div class='text-sm text-gray-500'>No requirements found in this category.</div>`;
+    return;
+  }
   items.forEach(it => {
     const img = it.image_url && it.image_url.startsWith('http')
       ? it.image_url
@@ -148,9 +154,15 @@ function renderListings(items) {
   });
 }
 
+function filterByCategory(category) {
+  fetchListings(category);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 const form = document.getElementById('reqForm');
 const msg = document.getElementById('formMsg');
 
+// ---- FORM SUBMISSION ----
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.textContent = "Uploading...";
@@ -211,8 +223,8 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+renderCategories();
 fetchListings();
 </script>
 </body>
 </html>
-
