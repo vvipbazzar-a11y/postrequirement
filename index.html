@@ -4,31 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MujhseDostiKaroge — Friendship Wall 💖</title>
-  <meta name="description" content="Share anonymous friendship messages, memes and stories — MujhseDostiKaroge" />
+  <meta name="description" content="Share friendship messages, memes and stories — MujhseDostiKaroge" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Poppins', sans-serif; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-<header class="bg-pink-600 text-white shadow-sm sticky top-0 z-40">
-  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-    <h1 class="text-lg font-semibold">💞 MujhseDostiKaroge</h1>
-    <a href="#" class="text-sm hover:underline">Profile</a>
+<!-- 🌸 HEADER -->
+<header class="bg-pink-600 text-white shadow-md sticky top-0 z-40">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <h1 class="text-lg font-bold tracking-wide">💞 MujhseDostiKaroge</h1>
+
+    <div class="flex space-x-3">
+      <a href="signup.html" class="bg-white text-pink-600 px-4 py-1.5 rounded-lg font-semibold hover:bg-pink-50 transition">Sign Up</a>
+      <a href="login.html" class="border border-white px-4 py-1.5 rounded-lg font-semibold hover:bg-pink-700 transition">Login</a>
+    </div>
   </div>
 </header>
 
-<main class="max-w-5xl mx-auto px-4 py-10 grid lg:grid-cols-3 gap-8">
-  <!-- Left side -->
+<!-- 🌸 MAIN -->
+<main class="max-w-6xl mx-auto px-4 py-10 grid lg:grid-cols-3 gap-8">
+  <!-- Left: Post Form -->
   <section class="lg:col-span-1 space-y-5">
     <div class="bg-white rounded-lg shadow p-5">
       <h2 class="text-xl font-semibold text-pink-600">Post a Message 💌</h2>
       <form id="msgForm" class="mt-3 grid gap-2">
         <input id="fromName" placeholder="Your name (optional)" class="border rounded px-3 py-2 text-sm">
         <textarea id="messageText" placeholder="Write your friendship message..." rows="4" class="border rounded px-3 py-2 text-sm" required></textarea>
-        <button type="submit" class="bg-pink-600 text-white py-2 rounded">Share Message</button>
+        <button type="submit" class="bg-pink-600 text-white py-2 rounded hover:bg-pink-700 transition">Share Message</button>
         <div id="msgStatus" class="text-sm mt-1"></div>
       </form>
     </div>
@@ -38,13 +44,13 @@
       <form id="memeForm" class="mt-3 grid gap-2">
         <input id="memeTitle" placeholder="Caption or Title" class="border rounded px-3 py-2 text-sm">
         <input id="memeImage" type="file" accept="image/*" class="border rounded px-3 py-2 text-sm">
-        <button type="submit" class="bg-pink-600 text-white py-2 rounded">Upload Meme</button>
+        <button type="submit" class="bg-pink-600 text-white py-2 rounded hover:bg-pink-700 transition">Upload Meme</button>
         <div id="memeStatus" class="text-sm mt-1"></div>
       </form>
     </div>
   </section>
 
-  <!-- Right side -->
+  <!-- Right: Feed -->
   <section class="lg:col-span-2">
     <div class="bg-white rounded-lg shadow p-5">
       <div class="flex justify-between items-center mb-4">
@@ -56,18 +62,17 @@
   </section>
 </main>
 
+<!-- 🌸 SCRIPT -->
 <script>
-// Supabase config
 const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
 const REST = SUPABASE_URL + "/rest/v1/requirements";
 const STORAGE_BUCKET = "requirements-images";
 
-// helper
 function el(id){ return document.getElementById(id); }
 function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-// Load feed
+// 🧩 Load Posts
 async function loadFeed(){
   el('feed').innerHTML = "<div class='text-gray-500 text-sm'>Loading posts...</div>";
   try {
@@ -76,7 +81,7 @@ async function loadFeed(){
     });
     const data = await res.json();
     if (!data || data.length === 0) {
-      el('feed').innerHTML = "<div class='text-sm text-gray-500'>No posts yet.</div>";
+      el('feed').innerHTML = "<div class='text-sm text-gray-500'>No posts yet 💬</div>";
       return;
     }
     el('feed').innerHTML = '';
@@ -93,12 +98,11 @@ async function loadFeed(){
         </div>`;
     });
   } catch (err) {
-    console.error(err);
     el('feed').innerHTML = "<div class='text-red-600 text-sm'>Error loading feed.</div>";
   }
 }
 
-// Message form
+// 🧩 Post Message
 el('msgForm').addEventListener('submit', async e => {
   e.preventDefault();
   el('msgStatus').textContent = 'Posting...';
@@ -128,7 +132,7 @@ el('msgForm').addEventListener('submit', async e => {
   }
 });
 
-// Meme upload
+// 🧩 Upload Meme
 el('memeForm').addEventListener('submit', async e => {
   e.preventDefault();
   const status = el('memeStatus');
