@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MujhseDostiKaroge — Friendship Wall 💖</title>
-  <meta name="description" content="Share friendship messages, memes and stories — MujhseDostiKaroge" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -18,9 +17,8 @@
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
     <h1 class="text-lg font-bold tracking-wide">💞 MujhseDostiKaroge</h1>
 
-    <div class="flex space-x-3">
-      <a href="signup.html" class="bg-white text-pink-600 px-4 py-1.5 rounded-lg font-semibold hover:bg-pink-50 transition">Sign Up</a>
-      <a href="login.html" class="border border-white px-4 py-1.5 rounded-lg font-semibold hover:bg-pink-700 transition">Login</a>
+    <div id="headerRight" class="flex space-x-3 items-center">
+      <!-- dynamically updated by JS -->
     </div>
   </div>
 </header>
@@ -32,7 +30,6 @@
     <div class="bg-white rounded-lg shadow p-5">
       <h2 class="text-xl font-semibold text-pink-600">Post a Message 💌</h2>
       <form id="msgForm" class="mt-3 grid gap-2">
-        <input id="fromName" placeholder="Your name (optional)" class="border rounded px-3 py-2 text-sm">
         <textarea id="messageText" placeholder="Write your friendship message..." rows="4" class="border rounded px-3 py-2 text-sm" required></textarea>
         <button type="submit" class="bg-pink-600 text-white py-2 rounded hover:bg-pink-700 transition">Share Message</button>
         <div id="msgStatus" class="text-sm mt-1"></div>
@@ -69,14 +66,36 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const REST = SUPABASE_URL + "/rest/v1/requirements";
 const STORAGE_BUCKET = "requirements-images";
 
+const user = JSON.parse(localStorage.getItem('user'));
+
+// 🧠 Header section update
+const headerRight = document.getElementById('headerRight');
+if (user) {
+  headerRight.innerHTML = `
+    <span class="text-sm bg-white/20 px-3 py-1 rounded-full">👋 Hi, <b>${user.username}</b></span>
+    <a href="profile.html" class="text-sm underline">Profile</a>
+    <button id="logoutBtn" class="text-sm border border-white px-3 py-1 rounded hover:bg-pink-700">Logout</button>
+  `;
+  document.getElementById('logoutBtn').addEventListener('click', ()=>{
+    localStorage.removeItem('user');
+    window.location.reload();
+  });
+} else {
+  headerRight.innerHTML = `
+    <a href="signup.html" class="bg-white text-pink-600 px-3 py-1 rounded-lg font-medium hover:bg-pink-50 transition">Sign Up</a>
+    <a href="login.html" class="border border-white px-3 py-1 rounded-lg font-medium hover:bg-pink-700 transition">Login</a>
+  `;
+}
+
+// Helper functions
 function el(id){ return document.getElementById(id); }
 function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-// 🧩 Load Posts
+// 🧩 Load feed
 async function loadFeed(){
   el('feed').innerHTML = "<div class='text-gray-500 text-sm'>Loading posts...</div>";
   try {
-    const res = await fetch(`${REST}?category=eq.Friendship&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {
+    const res = await fetch(`${REST}?select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {
       headers: {'Authorization':'Bearer '+SUPABASE_KEY}
     });
     const data = await res.json();
@@ -102,12 +121,13 @@ async function loadFeed(){
   }
 }
 
-// 🧩 Post Message
+// 🧩 Post message
 el('msgForm').addEventListener('submit', async e => {
   e.preventDefault();
   el('msgStatus').textContent = 'Posting...';
+  const username = user ? user.username : 'Anonymous';
   const payload = {
-    title: el('fromName').value || 'Anonymous',
+    title: username,
     category: 'Friendship',
     description: el('messageText').value,
     budget_min: 0, budget_max: 0,
@@ -132,7 +152,7 @@ el('msgForm').addEventListener('submit', async e => {
   }
 });
 
-// 🧩 Upload Meme
+// 🧩 Meme upload
 el('memeForm').addEventListener('submit', async e => {
   e.preventDefault();
   const status = el('memeStatus');
@@ -159,8 +179,9 @@ el('memeForm').addEventListener('submit', async e => {
     }
   }
 
+  const username = user ? user.username : 'Anonymous';
   const payload = {
-    title: el('memeTitle').value || 'Meme',
+    title: username,
     category: 'Friendship',
     description: el('memeTitle').value || '',
     budget_min: 0, budget_max: 0,
@@ -172,22 +193,3 @@ el('memeForm').addEventListener('submit', async e => {
     const res = await fetch(`${REST}?apikey=${SUPABASE_KEY}`, {
       method: 'POST',
       headers: {'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body: JSON.stringify(payload)
-    });
-    if (res.ok) {
-      status.textContent = '✅ Meme posted!';
-      el('memeForm').reset();
-      loadFeed();
-    } else {
-      status.textContent = '❌ Failed to post meme.';
-    }
-  } catch (err) {
-    status.textContent = '❌ Network error';
-  }
-});
-
-el('refreshBtn').addEventListener('click', loadFeed);
-loadFeed();
-</script>
-</body>
-</html>
