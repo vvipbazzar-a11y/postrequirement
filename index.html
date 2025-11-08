@@ -3,102 +3,187 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MujhseDostiKaroge — Share a Friendship Message</title>
-  <meta name="description" content="Share anonymous friendship messages, memes and stories — MujhseDostiKaroge"/>
+  <title>MujhseDostiKaroge — Friendship Wall 💖</title>
+  <meta name="description" content="Share anonymous friendship messages, memes and stories — MujhseDostiKaroge" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>body{font-family:Inter,system-ui,sans-serif}</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-<header class="bg-white shadow-sm sticky top-0 z-40">
+<header class="bg-pink-600 text-white shadow-sm sticky top-0 z-40">
   <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="h-10 w-10 bg-pink-600 text-white rounded-lg flex items-center justify-center font-bold">MD</div>
-      <div>
-        <h1 class="text-lg font-semibold">MujhseDostiKaroge</h1>
-        <div class="text-xs text-gray-500">Share friendship messages • Post memes • Spread smiles</div>
-      </div>
-    </div>
-    <div>
-      <a href="https://postrequirement.vercel.app/" class="text-sm text-blue-600 hover:underline">Back to Home</a>
-    </div>
+    <h1 class="text-lg font-semibold">💞 MujhseDostiKaroge</h1>
+    <a href="#" class="text-sm hover:underline">Profile</a>
   </div>
 </header>
 
 <main class="max-w-5xl mx-auto px-4 py-10 grid lg:grid-cols-3 gap-8">
-  <!-- Left: Forms -->
-  <section class="lg:col-span-1">
-    <div class="bg-white p-4 rounded-lg shadow">
-      <h2 class="text-xl font-semibold">Send an anonymous friendship message</h2>
-      <p class="text-sm text-gray-600 mt-1">Write your feelings — they’ll appear on the public wall.</p>
-
-      <form id="msgForm" class="mt-4 grid gap-2">
+  <!-- Left side -->
+  <section class="lg:col-span-1 space-y-5">
+    <div class="bg-white rounded-lg shadow p-5">
+      <h2 class="text-xl font-semibold text-pink-600">Post a Message 💌</h2>
+      <form id="msgForm" class="mt-3 grid gap-2">
         <input id="fromName" placeholder="Your name (optional)" class="border rounded px-3 py-2 text-sm">
-        <textarea id="messageText" placeholder="Write your message..." rows="4" class="border rounded px-3 py-2 text-sm" required></textarea>
-        <input id="msgEmail" type="email" placeholder="Contact email (optional)" class="border rounded px-3 py-2 text-sm">
-        <button class="bg-pink-600 text-white rounded px-4 py-2 mt-2" type="submit">Share Message</button>
+        <textarea id="messageText" placeholder="Write your friendship message..." rows="4" class="border rounded px-3 py-2 text-sm" required></textarea>
+        <button type="submit" class="bg-pink-600 text-white py-2 rounded">Share Message</button>
         <div id="msgStatus" class="text-sm mt-1"></div>
       </form>
     </div>
 
-    <div class="bg-white p-4 rounded-lg shadow mt-4">
-      <h3 class="font-semibold">Post a meme / image</h3>
-      <p class="text-xs text-gray-600 mt-1">Upload an image and caption — it’ll appear in the feed.</p>
+    <div class="bg-white rounded-lg shadow p-5">
+      <h2 class="text-xl font-semibold text-pink-600">Upload a Meme 📸</h2>
       <form id="memeForm" class="mt-3 grid gap-2">
-        <input id="memeTitle" placeholder="Caption or title" class="border rounded px-3 py-2 text-sm">
+        <input id="memeTitle" placeholder="Caption or Title" class="border rounded px-3 py-2 text-sm">
         <input id="memeImage" type="file" accept="image/*" class="border rounded px-3 py-2 text-sm">
-        <button class="bg-pink-600 text-white rounded px-4 py-2 mt-2" type="submit">Upload Meme</button>
+        <button type="submit" class="bg-pink-600 text-white py-2 rounded">Upload Meme</button>
         <div id="memeStatus" class="text-sm mt-1"></div>
       </form>
     </div>
-
-    <div class="text-xs text-gray-500 mt-4">Tip: Keep messages friendly & respectful 💖</div>
   </section>
 
-  <!-- Right: Feed -->
+  <!-- Right side -->
   <section class="lg:col-span-2">
-    <div class="bg-white p-4 rounded-lg shadow">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-semibold">Latest Friendship Posts</h2>
+    <div class="bg-white rounded-lg shadow p-5">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-pink-600">Latest Friendship Posts 💬</h2>
         <button id="refreshBtn" class="text-sm text-blue-600">Refresh</button>
       </div>
-      <div id="feed" class="mt-4 space-y-3"></div>
+      <div id="feed" class="space-y-3"></div>
     </div>
   </section>
 </main>
 
 <script>
-// --- Supabase Config ---
+// Supabase config
 const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
 const REST = SUPABASE_URL + "/rest/v1/requirements";
-const STORAGE_BUCKET = 'requirements-images';
+const STORAGE_BUCKET = "requirements-images";
 
 // helper
-function el(id){return document.getElementById(id);}
-function escapeHtml(s=''){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
+function el(id){ return document.getElementById(id); }
+function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-// load feed
+// Load feed
 async function loadFeed(){
-  el('feed').innerHTML = '<div class="text-sm text-gray-500">Loading...</div>';
-  try{
-    const res = await fetch(`${REST}?category=eq.Friendship&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {headers:{'Authorization':'Bearer '+SUPABASE_KEY}});
-    const items = await res.json();
-    if(!items || items.length===0){ el('feed').innerHTML = '<div class="text-sm text-gray-500">No posts yet 💬</div>'; return; }
+  el('feed').innerHTML = "<div class='text-gray-500 text-sm'>Loading posts...</div>";
+  try {
+    const res = await fetch(`${REST}?category=eq.Friendship&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {
+      headers: {'Authorization':'Bearer '+SUPABASE_KEY}
+    });
+    const data = await res.json();
+    if (!data || data.length === 0) {
+      el('feed').innerHTML = "<div class='text-sm text-gray-500'>No posts yet.</div>";
+      return;
+    }
     el('feed').innerHTML = '';
-    items.forEach(it=>{
-      const img = it.image_url && it.image_url.startsWith('http') ? it.image_url : null;
-      const div = document.createElement('div');
-      div.className='p-3 border rounded bg-white flex gap-3 items-start';
-      div.innerHTML = `
-        <div class="flex-1">
-          <div class="flex justify-between items-start">
-            <h3 class="font-semibold text-lg">${escapeHtml(it.title||'Friend')}</h3>
-            <div class="text-xs text-gray-500">${new Date(it.created_at).toLocaleDateString()}</div>
+    data.forEach(post => {
+      const img = post.image_url ? `<img src='${post.image_url}' class='w-24 h-24 object-cover rounded'>` : '';
+      el('feed').innerHTML += `
+        <div class='border rounded p-3 flex gap-3'>
+          <div class='flex-1'>
+            <h3 class='font-semibold text-pink-700'>${escapeHtml(post.title || 'Friend')}</h3>
+            <p class='text-gray-700 mt-1'>${escapeHtml(post.description || '')}</p>
+            <div class='text-xs text-gray-500 mt-1'>${new Date(post.created_at).toLocaleString()}</div>
           </div>
-          <p class="text-gray-700 mt-2">${escapeHtml(it.description||'')}</p>
-        </div>
-        ${img? `<img src="${img}" class="w-28 h-28 object-cover rounded">`:''}
-      `;
-      el('feed').appendC
+          ${img}
+        </div>`;
+    });
+  } catch (err) {
+    console.error(err);
+    el('feed').innerHTML = "<div class='text-red-600 text-sm'>Error loading feed.</div>";
+  }
+}
+
+// Message form
+el('msgForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  el('msgStatus').textContent = 'Posting...';
+  const payload = {
+    title: el('fromName').value || 'Anonymous',
+    category: 'Friendship',
+    description: el('messageText').value,
+    budget_min: 0, budget_max: 0,
+    location: '', contact_email: '', contact_phone: '',
+    image_url: null, status: 'open'
+  };
+  try {
+    const res = await fetch(`${REST}?apikey=${SUPABASE_KEY}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      el('msgStatus').textContent = '✅ Message shared!';
+      el('msgForm').reset();
+      loadFeed();
+    } else {
+      el('msgStatus').textContent = '❌ Failed to post.';
+    }
+  } catch (err) {
+    el('msgStatus').textContent = '❌ Network error';
+  }
+});
+
+// Meme upload
+el('memeForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const status = el('memeStatus');
+  status.textContent = 'Uploading...';
+  const file = el('memeImage').files[0];
+  let imageUrl = null;
+  if (file) {
+    const fname = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    try {
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${fname}`, {
+        method: 'PUT',
+        headers: {'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':file.type},
+        body: file
+      });
+      if (up.ok) {
+        imageUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${fname}`;
+      } else {
+        status.textContent = '❌ Upload failed';
+        return;
+      }
+    } catch (err) {
+      status.textContent = '❌ Upload error';
+      return;
+    }
+  }
+
+  const payload = {
+    title: el('memeTitle').value || 'Meme',
+    category: 'Friendship',
+    description: el('memeTitle').value || '',
+    budget_min: 0, budget_max: 0,
+    location: '', contact_email: '', contact_phone: '',
+    image_url: imageUrl, status: 'open'
+  };
+
+  try {
+    const res = await fetch(`${REST}?apikey=${SUPABASE_KEY}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      status.textContent = '✅ Meme posted!';
+      el('memeForm').reset();
+      loadFeed();
+    } else {
+      status.textContent = '❌ Failed to post meme.';
+    }
+  } catch (err) {
+    status.textContent = '❌ Network error';
+  }
+});
+
+el('refreshBtn').addEventListener('click', loadFeed);
+loadFeed();
+</script>
+</body>
+</html>
