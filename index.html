@@ -112,9 +112,10 @@ function renderListings(items) {
   const c = document.getElementById('listings');
   c.innerHTML = "";
   items.forEach(it => {
-    const img = it.image_url
-  ? it.image_url.replace('/requirements-images/', '/object/public/requirements-images/')
+   const img = it.image_url && it.image_url.startsWith('http')
+  ? it.image_url
   : `https://source.unsplash.com/400x400/?${it.category || 'business'}`;
+
 
     const d = document.createElement('div');
     d.className = "flex gap-3 bg-white border rounded p-3 items-start";
@@ -197,4 +198,5 @@ fetchListings();
 </script>
 </body>
 </html>
+
 
