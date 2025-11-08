@@ -78,7 +78,7 @@
   <!-- RIGHT SECTION -->
   <section>
     <div class="rounded-lg overflow-hidden shadow-sm bg-white">
-      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Business" class="w-full h-48 object-cover">
+      <img src="https://picsum.photos/900/300?business" alt="Business" class="w-full h-48 object-cover">
       <div class="p-4">
         <h4 class="text-lg font-semibold">Latest requirements</h4>
         <div id="listings" class="space-y-3 mt-3"></div>
@@ -100,15 +100,15 @@ const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
 document.getElementById('year').innerText = new Date().getFullYear();
 
 const categories = [
-  { name: "IT & Software", img: "https://source.unsplash.com/400x300/?software,technology" },
-  { name: "Design", img: "https://source.unsplash.com/400x300/?design,creative" },
-  { name: "Marketing", img: "https://source.unsplash.com/400x300/?marketing,advertising" },
-  { name: "Business", img: "https://source.unsplash.com/400x300/?business,office" },
-  { name: "Education", img: "https://source.unsplash.com/400x300/?education,learning" },
-  { name: "Manufacturing", img: "https://source.unsplash.com/400x300/?factory,industrial" }
+  { name: "IT & Software", img: "https://picsum.photos/seed/software/400/300" },
+  { name: "Design", img: "https://picsum.photos/seed/design/400/300" },
+  { name: "Marketing", img: "https://picsum.photos/seed/marketing/400/300" },
+  { name: "Business", img: "https://picsum.photos/seed/business/400/300" },
+  { name: "Education", img: "https://picsum.photos/seed/education/400/300" },
+  { name: "Manufacturing", img: "https://picsum.photos/seed/factory/400/300" }
 ];
 
-// 🖼️ Render category grid
+// Render Category Grid
 const catGrid = document.getElementById("categoryGrid");
 categories.forEach(cat => {
   const card = document.createElement("div");
@@ -121,7 +121,7 @@ categories.forEach(cat => {
   catGrid.appendChild(card);
 });
 
-// 🧠 Fetch Requirements
+// Fetch Requirements
 async function fetchListings(category = null) {
   let url = `${REST_ENDPOINT}?select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
   if (category) url = `${REST_ENDPOINT}?category=eq.${encodeURIComponent(category)}&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
@@ -140,7 +140,7 @@ function renderListings(items) {
   items.forEach(it => {
     const img = it.image_url && it.image_url.startsWith('http')
       ? it.image_url
-      : `https://source.unsplash.com/400x400/?${encodeURIComponent(it.category || 'business')}`;
+      : `https://picsum.photos/seed/${encodeURIComponent(it.category || 'business')}/400/400`;
     const d = document.createElement('div');
     d.innerHTML = `
       <a href="post.html?id=${it.id}" class="flex gap-3 bg-white border rounded p-3 items-start hover:bg-gray-50 transition">
@@ -155,7 +155,7 @@ function renderListings(items) {
   });
 }
 
-// 🔍 Filter by category click
+// Filter by Category Click
 function filterByCategory(category, card) {
   document.querySelectorAll("#categoryGrid div").forEach(c => c.classList.remove("category-active"));
   card.classList.add("category-active");
@@ -163,7 +163,7 @@ function filterByCategory(category, card) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// 🧾 Submit form
+// Submit Form
 const form = document.getElementById('reqForm');
 const msg = document.getElementById('formMsg');
 
@@ -220,7 +220,7 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// 🔃 Initialize
+// Initialize
 fetchListings();
 </script>
 </body>
