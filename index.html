@@ -23,7 +23,6 @@
 
     <div class="flex items-center gap-3">
       <select id="langSelect" class="rounded-md border px-2 py-1 text-sm"></select>
-      <a id="visitSite" class="text-sm text-blue-600 hover:underline hidden" href="#" target="_blank">Open live</a>
     </div>
   </div>
 </header>
@@ -112,18 +111,18 @@ const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
 const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
 
-// language setup (shortened)
-const langSelect = document.getElementById('langSelect');
-['EN','HI','FR','ES'].forEach(l=>{let o=document.createElement('option');o.value=l.toLowerCase();o.textContent=l;langSelect.appendChild(o);});
-langSelect.value='en';
-document.getElementById('year').innerText=new Date().getFullYear();
+document.getElementById('year').innerText = new Date().getFullYear();
 
-// fetch listings
 async function fetchListings(){
-  const res=await fetch(REST_ENDPOINT+"?select=*&order=created_at.desc&limit=6",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY}});
-  const rows=await res.json();
+  const res = await fetch(`${REST_ENDPOINT}?select=*&apikey=${SUPABASE_KEY}`, {
+    headers: {
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    }
+  });
+  const rows = await res.json();
   renderListings(rows);
 }
+
 function renderListings(items){
   const c=document.getElementById('listings');
   c.innerHTML="";
@@ -147,25 +146,30 @@ function renderListings(items){
   });
 }
 
-// form submit
 const form=document.getElementById('reqForm');
 const msg=document.getElementById('formMsg');
+
 form.addEventListener('submit',async(e)=>{
   e.preventDefault();
   msg.textContent="Uploading...";
+
   let imageUrl=null;
   const file=document.getElementById('imageUpload').files[0];
   if(file){
     const fileName=Date.now()+"_"+file.name;
-    const uploadRes=await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}`,{
+    const uploadRes=await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}?apikey=${SUPABASE_KEY}`,{
       method:'POST',
-      headers:{'Authorization':'Bearer '+SUPABASE_KEY,'apikey':SUPABASE_KEY,'Content-Type':file.type},
+      headers:{
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Content-Type':file.type
+      },
       body:file
     });
     if(uploadRes.ok){
       imageUrl=`${SUPABASE_URL}/storage/v1/object/public/requirements-images/${fileName}`;
     }
   }
+
   const payload={
     title:document.getElementById('title').value,
     category:document.getElementById('category').value,
@@ -178,43 +182,26 @@ form.addEventListener('submit',async(e)=>{
     image_url:imageUrl,
     status:'open'
   };
- const res = await fetch(`${REST_ENDPOINT}?apikey=${SUPABASE_KEY}`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + SUPABASE_KEY
-  },
-  body: JSON.stringify(payload)
-});
 
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'apikey': SUPABASE_KEY,
-    'Authorization': 'Bearer ' + SUPABASE_KEY
-  },
-  body: JSON.stringify(payload)
-});
+  const res = await fetch(`${REST_ENDPOINT}?apikey=${SUPABASE_KEY}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    },
+    body: JSON.stringify(payload)
+  });
 
-  if (res.ok) {
-  msg.textContent = "✅ Requirement posted successfully!";
-  form.reset();
-
-  // fetch latest records again after 1 second delay
-  setTimeout(() => {
-    fetchListings();
-  }, 1000);
-} else {
-  msg.textContent = "❌ Error posting requirement.";
-}
-
+  if(res.ok){
+    msg.textContent="✅ Requirement posted successfully!";
+    form.reset();
+    setTimeout(fetchListings,1000);
+  } else {
+    msg.textContent="❌ Error posting requirement.";
+  }
 });
 
 fetchListings();
 </script>
-
 </body>
 </html>
-
-
-
