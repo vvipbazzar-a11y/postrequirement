@@ -183,7 +183,19 @@ form.addEventListener('submit',async(e)=>{
     status:'open'
   };
 
-  const res = await fetch(`${REST_ENDPOINT}?apikey=${SUPABASE_KEY}`, {
+  const text = await res.text();
+console.log("POST status:", res.status);
+console.log("POST response:", text);
+
+if (res.ok) {
+  msg.textContent = "✅ Requirement posted successfully!";
+  form.reset();
+  setTimeout(fetchListings, 1000);
+} else {
+  msg.textContent = "❌ Error posting requirement.";
+  msg.innerHTML += `<br><small style='color:#a00;'>${text}</small>`;
+}
+
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -205,3 +217,4 @@ fetchListings();
 </script>
 </body>
 </html>
+
