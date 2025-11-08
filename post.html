@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Requirement - PostRequirement</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{font-family:Inter,system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <main class="max-w-4xl mx-auto p-6">
+    <a href="index.html" class="text-blue-600 text-sm hover:underline">&larr; Back to listings</a>
+    <div id="postContainer" class="mt-6 bg-white shadow-md rounded-lg p-6"></div>
+  </main>
+
+  <script>
+  const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+  const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  async function loadPost() {
+    const res = await fetch(`${REST_ENDPOINT}?id=eq.${id}&select=*&apikey=${SUPABASE_KEY}`, {
+      headers: {'Authorization': 'Bearer ' + SUPABASE_KEY}
+    });
+    const data = await res.json();
+    if (!data || data.length === 0) {
+      document.getElementById("postContainer").innerHTML = "<p class='text-center text-gray-600'>Requirement not found.</p>";
+      return;
+    }
+    const post = data[0];
+    const img = post.image_url ? post.image_url : `https://source.unsplash.com/800x400/?${post.category||'business'}`;
+
+    document.getElementById("postContainer").innerHTML = `
+      <img src="${img}" class="w-full h-64 object-cover rounded mb-4">
+      <h1 class="text-2xl font-semibold">${post.title}</h1>
+      <div class="text-sm text-gray-500 mb-2">${post.category || ''} • ${post.location || ''}</div>
+      <p class="text-gray-700 mb-4">${post.description}</p>
+      <div class="text-gray-800 font-medium mb-2">Budget: ₹${post.budget_min || 0} - ₹${post.budget_max || 0}</div>
+      <div class="mt-3 p-4 bg-gray-100 rounded-lg">
+        <div><strong>Email:</strong> ${post.contact_email || '-'}</div>
+        <div><strong>Phone:</strong> ${post.contact_phone || '-'}</div>
+      </div>
+    `;
+  }
+  loadPost();
+  </script>
+</body>
+</html>
