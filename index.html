@@ -125,9 +125,12 @@ form.addEventListener('submit', async (e) => {
   
   let imageUrl = null;
   const file = document.getElementById('imageUpload').files[0];
+
   if (file) {
     const fileName = Date.now() + "_" + file.name;
-    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}?apikey=${SUPABASE_KEY}`, {
+
+    // ✅ Correct upload path
+    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}`, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + SUPABASE_KEY,
@@ -135,8 +138,13 @@ form.addEventListener('submit', async (e) => {
       },
       body: file
     });
+
     if (uploadRes.ok) {
+      // ✅ Correct public URL
       imageUrl = `${SUPABASE_URL}/storage/v1/object/public/requirements-images/${fileName}`;
+      console.log("✅ Image uploaded successfully:", imageUrl);
+    } else {
+      console.error("❌ Upload failed:", await uploadRes.text());
     }
   }
 
