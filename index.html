@@ -20,24 +20,20 @@
         <div class="text-xs text-gray-500">Post • Get Quotes • Close Deals</div>
       </div>
     </div>
-
-    <div class="flex items-center gap-3">
-      <select id="langSelect" class="rounded-md border px-2 py-1 text-sm"></select>
-    </div>
   </div>
 </header>
 
 <main class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-8">
   <section>
-    <h2 id="heroTitle" class="text-3xl font-bold">Post your requirement. Get responses fast.</h2>
-    <p id="heroText" class="mt-3 text-gray-600">List what you need—services, products, vendors or freelancers. We notify relevant providers to contact you.</p>
+    <h2 class="text-3xl font-bold">Post your requirement. Get responses fast.</h2>
+    <p class="mt-3 text-gray-600">List what you need—services, products, vendors or freelancers. We notify relevant providers to contact you.</p>
 
     <div class="mt-6 p-3 bg-gray-100 rounded-md text-center text-sm text-gray-700">
       [Top Ad Placeholder]
     </div>
 
     <div class="mt-8">
-      <h3 class="text-lg font-medium" id="formTitle">Post a Requirement</h3>
+      <h3 class="text-lg font-medium">Post a Requirement</h3>
 
       <form id="reqForm" class="mt-4 bg-white p-4 rounded-lg shadow-sm border">
         <div class="grid gap-3">
@@ -59,11 +55,10 @@
           <textarea id="description" placeholder="Describe your requirement..." rows="4" class="border rounded px-3 py-2" required></textarea>
 
           <div class="grid grid-cols-2 gap-2">
-            <input id="contactEmail" type="email" placeholder="Contact email" class="border rounded px-3 py-2">
+            <input id="contactEmail" type="email" placeholder="Contact email" class="border rounded px-3 py-2" required>
             <input id="contactPhone" type="tel" placeholder="Contact phone (optional)" class="border rounded px-3 py-2">
           </div>
 
-          <!-- 🖼️ Image Upload -->
           <label class="text-sm font-medium mt-2 block">Upload an image (optional):</label>
           <input id="imageUpload" type="file" accept="image/*" class="border rounded px-3 py-2 w-full" />
 
@@ -76,29 +71,21 @@
 
   <section>
     <div class="rounded-lg overflow-hidden shadow-sm bg-white">
-      <img id="heroImage" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Business" class="w-full h-48 object-cover">
+      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Business" class="w-full h-48 object-cover">
       <div class="p-4">
-        <h4 id="latestTitle" class="text-lg font-semibold">Latest requirements</h4>
-        <p id="latestText" class="text-sm text-gray-600">Browse the most recent posted requirements from around the world.</p>
+        <h4 class="text-lg font-semibold">Latest requirements</h4>
+        <p class="text-sm text-gray-600">Browse the most recent posted requirements from around the world.</p>
 
         <div class="my-4 p-3 bg-gray-50 rounded text-center text-sm">
           [Middle Ad Placeholder]
         </div>
 
         <div id="listings" class="space-y-3 mt-3"></div>
-        <div class="mt-4 text-center">
-          <a href="view.html" id="viewAll" class="text-sm text-blue-600">View all requirements →</a>
-        </div>
       </div>
     </div>
 
     <footer class="mt-6 text-xs text-gray-500">
       <div>© <span id="year"></span> PostRequirement</div>
-      <div class="mt-2">
-        <a href="privacy.html" class="hover:underline">Privacy Policy</a> •
-        <a href="contact.html" class="hover:underline">Contact</a> •
-        <a href="about.html" class="hover:underline">About Us</a>
-      </div>
       <div class="mt-3 p-3 bg-gray-100 rounded text-center text-sm">
         [Footer Ad Placeholder]
       </div>
@@ -113,89 +100,75 @@ const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
 
 document.getElementById('year').innerText = new Date().getFullYear();
 
-async function fetchListings(){
-  const res = await fetch(`${REST_ENDPOINT}?select=*&apikey=${SUPABASE_KEY}`, {
-    headers: {
-      'Authorization': 'Bearer ' + SUPABASE_KEY
-    }
+async function fetchListings() {
+  const res = await fetch(`${REST_ENDPOINT}?select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {
+    headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY }
   });
   const rows = await res.json();
   renderListings(rows);
 }
 
-function renderListings(items){
-  const c=document.getElementById('listings');
-  c.innerHTML="";
-  items.forEach(it=>{
-    const img = it.image_url ? it.image_url : `https://images.unsplash.com/random/400x400?sig=${it.id || Math.random()}&business,office`;
-    const d=document.createElement('div');
-    d.className="flex gap-3 bg-white border rounded p-3 items-start";
-    d.innerHTML=`
+function renderListings(items) {
+  const c = document.getElementById('listings');
+  c.innerHTML = "";
+  items.forEach(it => {
+    const img = it.image_url ? it.image_url : `https://source.unsplash.com/400x400/?${it.category || 'business'}`;
+    const d = document.createElement('div');
+    d.className = "flex gap-3 bg-white border rounded p-3 items-start";
+    d.innerHTML = `
       <img src="${img}" class="w-20 h-20 object-cover rounded">
       <div class="flex-1">
         <div class="flex justify-between items-start">
-          <h5 class="font-semibold">${it.title||''}</h5>
-          <div class="text-xs text-gray-500">₹${it.budget_min||'-'} - ${it.budget_max||'-'}</div>
+          <h5 class="font-semibold">${it.title || ''}</h5>
+          <div class="text-xs text-gray-500">₹${it.budget_min || '-'} - ${it.budget_max || '-'}</div>
         </div>
-        <div class="text-sm text-gray-600 mt-1">${(it.description||'').slice(0,120)}</div>
+        <div class="text-sm text-gray-600 mt-1">${(it.description || '').slice(0,120)}</div>
         <div class="mt-2 text-xs text-gray-500 flex gap-2">
-          <span class="px-2 py-1 bg-gray-100 rounded">${it.category||'Other'}</span>
+          <span class="px-2 py-1 bg-gray-100 rounded">${it.category || 'Other'}</span>
         </div>
       </div>`;
     c.appendChild(d);
   });
 }
 
-const form=document.getElementById('reqForm');
-const msg=document.getElementById('formMsg');
+const form = document.getElementById('reqForm');
+const msg = document.getElementById('formMsg');
 
-form.addEventListener('submit',async(e)=>{
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  msg.textContent="Uploading...";
-
-  let imageUrl=null;
-  const file=document.getElementById('imageUpload').files[0];
-  if(file){
-    const fileName=Date.now()+"_"+file.name;
-    const uploadRes=await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}?apikey=${SUPABASE_KEY}`,{
-      method:'POST',
-      headers:{
-        'Authorization':'Bearer '+SUPABASE_KEY,
-        'Content-Type':file.type
+  msg.textContent = "Uploading...";
+  
+  let imageUrl = null;
+  const file = document.getElementById('imageUpload').files[0];
+  if (file) {
+    const fileName = Date.now() + "_" + file.name;
+    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}?apikey=${SUPABASE_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': file.type
       },
-      body:file
+      body: file
     });
-    if(uploadRes.ok){
-      imageUrl=`${SUPABASE_URL}/storage/v1/object/public/requirements-images/${fileName}`;
+    if (uploadRes.ok) {
+      imageUrl = `${SUPABASE_URL}/storage/v1/object/public/requirements-images/${fileName}`;
     }
   }
 
-  const payload={
-    title:document.getElementById('title').value,
-    category:document.getElementById('category').value,
-    budget_min:Number(document.getElementById('budgetMin').value)||null,
-    budget_max:Number(document.getElementById('budgetMax').value)||null,
-    location:document.getElementById('location').value,
-    description:document.getElementById('description').value,
-    contact_email:document.getElementById('contactEmail').value,
-    contact_phone:document.getElementById('contactPhone').value,
-    image_url:imageUrl,
-    status:'open'
+  const payload = {
+    title: document.getElementById('title').value || "Untitled",
+    category: document.getElementById('category').value || "General",
+    budget_min: Number(document.getElementById('budgetMin').value) || 0,
+    budget_max: Number(document.getElementById('budgetMax').value) || 0,
+    location: document.getElementById('location').value || "",
+    description: document.getElementById('description').value,
+    contact_email: document.getElementById('contactEmail').value,
+    contact_phone: document.getElementById('contactPhone').value || "",
+    image_url: imageUrl,
+    status: "open"
   };
 
-  const text = await res.text();
-console.log("POST status:", res.status);
-console.log("POST response:", text);
-
-if (res.ok) {
-  msg.textContent = "✅ Requirement posted successfully!";
-  form.reset();
-  setTimeout(fetchListings, 1000);
-} else {
-  msg.textContent = "❌ Error posting requirement.";
-  msg.innerHTML += `<br><small style='color:#a00;'>${text}</small>`;
-}
-
+  const res = await fetch(`${REST_ENDPOINT}?apikey=${SUPABASE_KEY}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -204,12 +177,16 @@ if (res.ok) {
     body: JSON.stringify(payload)
   });
 
-  if(res.ok){
-    msg.textContent="✅ Requirement posted successfully!";
+  const text = await res.text();
+  console.log("POST:", res.status, text);
+
+  if (res.ok) {
+    msg.textContent = "✅ Requirement posted successfully!";
     form.reset();
-    setTimeout(fetchListings,1000);
+    setTimeout(fetchListings, 1000);
   } else {
-    msg.textContent="❌ Error posting requirement.";
+    msg.textContent = "❌ Error posting requirement.";
+    msg.innerHTML += `<br><small style="color:#a00;">${text}</small>`;
   }
 });
 
@@ -217,4 +194,3 @@ fetchListings();
 </script>
 </body>
 </html>
-
