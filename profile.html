@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Profile - MujhseDostiKaroge 💖</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+  </style>
+</head>
+<body class="bg-pink-50 text-gray-800 min-h-screen flex flex-col items-center justify-center">
+
+  <div id="profileCard" class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center hidden">
+    <img id="profileImg" src="" alt="Profile" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover shadow-md">
+    <h1 id="profileName" class="text-2xl font-bold text-pink-600 mb-1"></h1>
+    <p id="profileEmail" class="text-gray-600 text-sm mb-1"></p>
+    <p id="profileBio" class="text-gray-700 italic mb-3"></p>
+    <p id="joinedAt" class="text-xs text-gray-500 mb-4"></p>
+    
+    <button id="logoutBtn" class="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 transition">
+      Logout
+    </button>
+  </div>
+
+  <div id="noUser" class="text-center hidden">
+    <h2 class="text-xl font-semibold text-gray-700">You are not logged in 😕</h2>
+    <p class="text-sm mt-2 text-gray-600">
+      <a href="login.html" class="text-pink-600 hover:underline">Login</a> or 
+      <a href="signup.html" class="text-pink-600 hover:underline">Create account</a>
+    </p>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+
+const userData = JSON.parse(localStorage.getItem('user'));
+
+if(!userData){
+  document.getElementById('noUser').classList.remove('hidden');
+} else {
+  const card = document.getElementById('profileCard');
+  card.classList.remove('hidden');
+
+  document.getElementById('profileImg').src = userData.profile_image || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+  document.getElementById('profileName').textContent = userData.username || 'Anonymous';
+  document.getElementById('profileEmail').textContent = userData.email || '';
+  document.getElementById('profileBio').textContent = userData.bio || 'No bio added yet';
+  document.getElementById('joinedAt').textContent = "Joined on " + new Date(userData.created_at || Date.now()).toLocaleString();
+}
+
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  localStorage.removeItem('user');
+  window.location.href = 'index.html';
+});
+</script>
+
+</body>
+</html>
