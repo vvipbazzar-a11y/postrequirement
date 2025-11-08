@@ -196,8 +196,18 @@ form.addEventListener('submit',async(e)=>{
   body: JSON.stringify(payload)
 });
 
-  if(res.ok){msg.textContent="✅ Requirement posted successfully!";form.reset();fetchListings();}
-  else msg.textContent="❌ Error posting requirement.";
+  if (res.ok) {
+  msg.textContent = "✅ Requirement posted successfully!";
+  form.reset();
+
+  // fetch latest records again after 1 second delay
+  setTimeout(() => {
+    fetchListings();
+  }, 1000);
+} else {
+  msg.textContent = "❌ Error posting requirement.";
+}
+
 });
 
 fetchListings();
@@ -205,5 +215,6 @@ fetchListings();
 
 </body>
 </html>
+
 
 
