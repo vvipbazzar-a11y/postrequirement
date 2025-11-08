@@ -120,6 +120,21 @@ function renderListings(items) {
     const d = document.createElement('div');
     d.className = "flex gap-3 bg-white border rounded p-3 items-start";
     d.innerHTML = `
+  <a href="post.html?id=${it.id}" class="flex gap-3 bg-white border rounded p-3 items-start hover:bg-gray-50 transition">
+    <img src="${img}" class="w-20 h-20 object-cover rounded">
+    <div class="flex-1">
+      <div class="flex justify-between items-start">
+        <h5 class="font-semibold">${it.title || ''}</h5>
+        <div class="text-xs text-gray-500">₹${it.budget_min || '-'} - ${it.budget_max || '-'}</div>
+      </div>
+      <div class="text-sm text-gray-600 mt-1">${(it.description || '').slice(0,120)}</div>
+      <div class="mt-2 text-xs text-gray-500 flex gap-2">
+        <span class="px-2 py-1 bg-gray-100 rounded">${it.category || 'Other'}</span>
+      </div>
+    </div>
+  </a>
+`;
+
       <img src="${img}" class="w-20 h-20 object-cover rounded">
       <div class="flex-1">
         <div class="flex justify-between items-start">
@@ -198,5 +213,6 @@ fetchListings();
 </script>
 </body>
 </html>
+
 
 
