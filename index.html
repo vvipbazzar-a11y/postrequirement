@@ -21,17 +21,17 @@
       </div>
     </div>
     <div>
-      <a href="https://postrequirement.vercel.app/" class="text-sm text-blue-600 hover:underline">Back to PostRequirement</a>
+      <a href="https://postrequirement.vercel.app/" class="text-sm text-blue-600 hover:underline">Back to Home</a>
     </div>
   </div>
 </header>
 
 <main class="max-w-5xl mx-auto px-4 py-10 grid lg:grid-cols-3 gap-8">
-  <!-- Left: Actions -->
+  <!-- Left: Forms -->
   <section class="lg:col-span-1">
     <div class="bg-white p-4 rounded-lg shadow">
       <h2 class="text-xl font-semibold">Send an anonymous friendship message</h2>
-      <p class="text-sm text-gray-600 mt-1">Share a short message — it will be posted publicly under "Friendship" category. No sign-up required.</p>
+      <p class="text-sm text-gray-600 mt-1">Write your feelings — they’ll appear on the public wall.</p>
 
       <form id="msgForm" class="mt-4 grid gap-2">
         <input id="fromName" placeholder="Your name (optional)" class="border rounded px-3 py-2 text-sm">
@@ -44,7 +44,7 @@
 
     <div class="bg-white p-4 rounded-lg shadow mt-4">
       <h3 class="font-semibold">Post a meme / image</h3>
-      <p class="text-xs text-gray-600 mt-1">Upload an image and a caption — it will be posted under Friendship memes.</p>
+      <p class="text-xs text-gray-600 mt-1">Upload an image and caption — it’ll appear in the feed.</p>
       <form id="memeForm" class="mt-3 grid gap-2">
         <input id="memeTitle" placeholder="Caption or title" class="border rounded px-3 py-2 text-sm">
         <input id="memeImage" type="file" accept="image/*" class="border rounded px-3 py-2 text-sm">
@@ -53,7 +53,7 @@
       </form>
     </div>
 
-    <div class="text-xs text-gray-500 mt-4">Tip: Keep messages friendly and respectful. Report inappropriate content via the contact link on PostRequirement.</div>
+    <div class="text-xs text-gray-500 mt-4">Tip: Keep messages friendly & respectful 💖</div>
   </section>
 
   <!-- Right: Feed -->
@@ -63,108 +63,42 @@
         <h2 class="text-xl font-semibold">Latest Friendship Posts</h2>
         <button id="refreshBtn" class="text-sm text-blue-600">Refresh</button>
       </div>
-
       <div id="feed" class="mt-4 space-y-3"></div>
     </div>
   </section>
 </main>
 
 <script>
-// --- CONFIG (replace if you want) ---
+// --- Supabase Config ---
 const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
 const REST = SUPABASE_URL + "/rest/v1/requirements";
-const STORAGE_BUCKET = 'requirements-images'; // uses same bucket as PostRequirement
+const STORAGE_BUCKET = 'requirements-images';
 
-// Utility
-function el(id){return document.getElementById(id);} 
+// helper
+function el(id){return document.getElementById(id);}
+function escapeHtml(s=''){return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
 
-// Fetch & render friendship posts
+// load feed
 async function loadFeed(){
   el('feed').innerHTML = '<div class="text-sm text-gray-500">Loading...</div>';
   try{
     const res = await fetch(`${REST}?category=eq.Friendship&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {headers:{'Authorization':'Bearer '+SUPABASE_KEY}});
     const items = await res.json();
-    if(!items || items.length===0){ el('feed').innerHTML = '<div class="text-sm text-gray-500">No posts yet. Be the first!</div>'; return; }
+    if(!items || items.length===0){ el('feed').innerHTML = '<div class="text-sm text-gray-500">No posts yet 💬</div>'; return; }
     el('feed').innerHTML = '';
     items.forEach(it=>{
       const img = it.image_url && it.image_url.startsWith('http') ? it.image_url : null;
-      const card = document.createElement('div');
-      card.className = 'p-3 border rounded bg-white flex gap-3 items-start';
-      card.innerHTML = `
+      const div = document.createElement('div');
+      div.className='p-3 border rounded bg-white flex gap-3 items-start';
+      div.innerHTML = `
         <div class="flex-1">
           <div class="flex justify-between items-start">
-            <div>
-              <div class="text-sm text-gray-500">${new Date(it.created_at).toLocaleString()}</div>
-              <h3 class="font-semibold text-lg mt-1">${escapeHtml(it.title || (it.contact_email? it.contact_email : 'Anonymous'))}</h3>
-            </div>
-            <div class="text-xs text-gray-500">${escapeHtml(it.category || '')}</div>
+            <h3 class="font-semibold text-lg">${escapeHtml(it.title||'Friend')}</h3>
+            <div class="text-xs text-gray-500">${new Date(it.created_at).toLocaleDateString()}</div>
           </div>
           <p class="text-gray-700 mt-2">${escapeHtml(it.description||'')}</p>
         </div>
-        ${img? `<img src="${img}" class="w-28 h-28 object-cover rounded">` : ''}
+        ${img? `<img src="${img}" class="w-28 h-28 object-cover rounded">`:''}
       `;
-      el('feed').appendChild(card);
-    });
-  }catch(e){ console.error(e); el('feed').innerHTML = '<div class="text-sm text-red-600">Error loading feed.</div>'; }
-}
-
-function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-
-// Message form submit
-el('msgForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const status = el('msgStatus'); status.textContent='Posting...';
-  const payload = {
-    title: (el('fromName').value || 'Friend'),
-    category: 'Friendship',
-    budget_min: 0,
-    budget_max: 0,
-    location: '',
-    description: el('messageText').value,
-    contact_email: el('msgEmail').value || '',
-    contact_phone: '',
-    image_url: null,
-    status: 'open'
-  };
-  try{
-    const res = await fetch(`${REST}?apikey=${SUPABASE_KEY}`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY}, body:JSON.stringify(payload)});
-    const text = await res.text();
-    if(res.ok){ status.textContent='✅ Message shared!'; el('msgForm').reset(); loadFeed(); }
-    else{ status.innerHTML = '❌ Failed. '+escapeHtml(text); }
-  }catch(err){ console.error(err); status.textContent='❌ Network error'; }
-});
-
-// Meme upload form
-el('memeForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const status = el('memeStatus'); status.textContent='Uploading...';
-  const file = el('memeImage').files[0];
-  let imageUrl = null;
-  if(file){
-    const fname = Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9.-]/g,'_');
-    try{
-      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${fname}`, {method:'POST', headers:{'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':file.type}, body:file});
-      if(up.ok){ imageUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${fname}`; }
-      else{ const t=await up.text(); status.innerHTML='❌ Upload failed: '+escapeHtml(t); return; }
-    }catch(err){ console.error(err); status.textContent='❌ Upload error'; return; }
-  }
-
-  const payload = {
-    title: el('memeTitle').value || 'Meme', category:'Friendship', budget_min:0, budget_max:0, location:'', description: el('memeTitle').value || '', contact_email:'', contact_phone:'', image_url: imageUrl, status:'open'
-  };
-  try{
-    const res = await fetch(`${REST}?apikey=${SUPABASE_KEY}`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY}, body:JSON.stringify(payload)});
-    const text = await res.text();
-    if(res.ok){ status.textContent='✅ Meme posted!'; el('memeForm').reset(); loadFeed(); }
-    else{ status.innerHTML='❌ Failed to post: '+escapeHtml(text); }
-  }catch(err){ console.error(err); status.textContent='❌ Network error'; }
-});
-
-el('refreshBtn').addEventListener('click', ()=>loadFeed());
-
-// initial
-loadFeed();
-</script>
-</body>
-</html>
+      el('feed').appendC
