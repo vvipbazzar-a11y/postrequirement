@@ -3,225 +3,168 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PostRequirement — Post Your Business Needs</title>
-  <meta name="description" content="PostRequirement — Post requirements & get quotes from vendors worldwide."/>
+  <title>MujhseDostiKaroge — Share a Friendship Message</title>
+  <meta name="description" content="Share anonymous friendship messages, memes and stories — MujhseDostiKaroge"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body{font-family:Inter,system-ui,sans-serif}
-    .category-active{outline:2px solid #2563eb; outline-offset:-2px;}
-  </style>
+  <style>body{font-family:Inter,system-ui,sans-serif}</style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
 <header class="bg-white shadow-sm sticky top-0 z-40">
-  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="h-10 w-10 bg-black text-white rounded-lg flex items-center justify-center font-bold">PR</div>
+      <div class="h-10 w-10 bg-pink-600 text-white rounded-lg flex items-center justify-center font-bold">MD</div>
       <div>
-        <h1 class="text-lg font-semibold">PostRequirement</h1>
-        <div class="text-xs text-gray-500">Post • Get Quotes • Close Deals</div>
+        <h1 class="text-lg font-semibold">MujhseDostiKaroge</h1>
+        <div class="text-xs text-gray-500">Share friendship messages • Post memes • Spread smiles</div>
       </div>
+    </div>
+    <div>
+      <a href="https://postrequirement.vercel.app/" class="text-sm text-blue-600 hover:underline">Back to PostRequirement</a>
     </div>
   </div>
 </header>
 
-<main class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-8">
+<main class="max-w-5xl mx-auto px-4 py-10 grid lg:grid-cols-3 gap-8">
+  <!-- Left: Actions -->
+  <section class="lg:col-span-1">
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h2 class="text-xl font-semibold">Send an anonymous friendship message</h2>
+      <p class="text-sm text-gray-600 mt-1">Share a short message — it will be posted publicly under "Friendship" category. No sign-up required.</p>
 
-  <!-- LEFT SECTION -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Browse by Category</h2>
-    <div id="categoryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
-      <!-- categories will render here -->
-    </div>
-
-    <h2 class="text-3xl font-bold">Post your requirement. Get responses fast.</h2>
-    <p class="mt-3 text-gray-600">List what you need—services, products, vendors or freelancers. We notify relevant providers to contact you.</p>
-
-    <div class="mt-8">
-      <h3 class="text-lg font-medium">Post a Requirement</h3>
-
-      <form id="reqForm" class="mt-4 bg-white p-4 rounded-lg shadow-sm border">
-        <div class="grid gap-3">
-          <input id="title" placeholder="Title" class="border rounded px-3 py-2" required>
-          <select id="category" class="border rounded px-3 py-2">
-            <option value="">Select category</option>
-            <option>IT & Software</option>
-            <option>Design</option>
-            <option>Marketing</option>
-            <option>Business</option>
-            <option>Education</option>
-            <option>Manufacturing</option>
-          </select>
-          <div class="grid grid-cols-2 gap-2">
-            <input id="budgetMin" type="number" placeholder="Budget Min (₹)" class="border rounded px-3 py-2">
-            <input id="budgetMax" type="number" placeholder="Budget Max (₹)" class="border rounded px-3 py-2">
-          </div>
-          <input id="location" placeholder="Location (Optional)" class="border rounded px-3 py-2">
-          <textarea id="description" placeholder="Describe your requirement..." rows="4" class="border rounded px-3 py-2" required></textarea>
-
-          <div class="grid grid-cols-2 gap-2">
-            <input id="contactEmail" type="email" placeholder="Contact email" class="border rounded px-3 py-2" required>
-            <input id="contactPhone" type="tel" placeholder="Contact phone (optional)" class="border rounded px-3 py-2">
-          </div>
-
-          <label class="text-sm font-medium mt-2 block">Upload an image (optional):</label>
-          <input id="imageUpload" type="file" accept="image/*" class="border rounded px-3 py-2 w-full" />
-
-          <button id="submitBtn" class="bg-black text-white rounded px-4 py-2 mt-2">Post Requirement</button>
-          <div id="formMsg" class="text-sm mt-1"></div>
-        </div>
+      <form id="msgForm" class="mt-4 grid gap-2">
+        <input id="fromName" placeholder="Your name (optional)" class="border rounded px-3 py-2 text-sm">
+        <textarea id="messageText" placeholder="Write your message..." rows="4" class="border rounded px-3 py-2 text-sm" required></textarea>
+        <input id="msgEmail" type="email" placeholder="Contact email (optional)" class="border rounded px-3 py-2 text-sm">
+        <button class="bg-pink-600 text-white rounded px-4 py-2 mt-2" type="submit">Share Message</button>
+        <div id="msgStatus" class="text-sm mt-1"></div>
       </form>
     </div>
-  </section>
 
-  <!-- RIGHT SECTION -->
-  <section>
-    <div class="rounded-lg overflow-hidden shadow-sm bg-white">
-      <img src="https://picsum.photos/900/300?business" alt="Business" class="w-full h-48 object-cover">
-      <div class="p-4">
-        <h4 class="text-lg font-semibold">Latest requirements</h4>
-        <div id="listings" class="space-y-3 mt-3"></div>
-      </div>
+    <div class="bg-white p-4 rounded-lg shadow mt-4">
+      <h3 class="font-semibold">Post a meme / image</h3>
+      <p class="text-xs text-gray-600 mt-1">Upload an image and a caption — it will be posted under Friendship memes.</p>
+      <form id="memeForm" class="mt-3 grid gap-2">
+        <input id="memeTitle" placeholder="Caption or title" class="border rounded px-3 py-2 text-sm">
+        <input id="memeImage" type="file" accept="image/*" class="border rounded px-3 py-2 text-sm">
+        <button class="bg-pink-600 text-white rounded px-4 py-2 mt-2" type="submit">Upload Meme</button>
+        <div id="memeStatus" class="text-sm mt-1"></div>
+      </form>
     </div>
 
-    <footer class="mt-6 text-xs text-gray-500">
-      <div>© <span id="year"></span> PostRequirement</div>
-    </footer>
+    <div class="text-xs text-gray-500 mt-4">Tip: Keep messages friendly and respectful. Report inappropriate content via the contact link on PostRequirement.</div>
   </section>
 
+  <!-- Right: Feed -->
+  <section class="lg:col-span-2">
+    <div class="bg-white p-4 rounded-lg shadow">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold">Latest Friendship Posts</h2>
+        <button id="refreshBtn" class="text-sm text-blue-600">Refresh</button>
+      </div>
+
+      <div id="feed" class="mt-4 space-y-3"></div>
+    </div>
+  </section>
 </main>
 
 <script>
+// --- CONFIG (replace if you want) ---
 const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
-const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
+const REST = SUPABASE_URL + "/rest/v1/requirements";
+const STORAGE_BUCKET = 'requirements-images'; // uses same bucket as PostRequirement
 
-document.getElementById('year').innerText = new Date().getFullYear();
+// Utility
+function el(id){return document.getElementById(id);} 
 
-const categories = [
-  { name: "IT & Software", img: "https://picsum.photos/seed/software/400/300" },
-  { name: "Design", img: "https://picsum.photos/seed/design/400/300" },
-  { name: "Marketing", img: "https://picsum.photos/seed/marketing/400/300" },
-  { name: "Business", img: "https://picsum.photos/seed/business/400/300" },
-  { name: "Education", img: "https://picsum.photos/seed/education/400/300" },
-  { name: "Manufacturing", img: "https://picsum.photos/seed/factory/400/300" }
-];
+// Fetch & render friendship posts
+async function loadFeed(){
+  el('feed').innerHTML = '<div class="text-sm text-gray-500">Loading...</div>';
+  try{
+    const res = await fetch(`${REST}?category=eq.Friendship&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {headers:{'Authorization':'Bearer '+SUPABASE_KEY}});
+    const items = await res.json();
+    if(!items || items.length===0){ el('feed').innerHTML = '<div class="text-sm text-gray-500">No posts yet. Be the first!</div>'; return; }
+    el('feed').innerHTML = '';
+    items.forEach(it=>{
+      const img = it.image_url && it.image_url.startsWith('http') ? it.image_url : null;
+      const card = document.createElement('div');
+      card.className = 'p-3 border rounded bg-white flex gap-3 items-start';
+      card.innerHTML = `
+        <div class="flex-1">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="text-sm text-gray-500">${new Date(it.created_at).toLocaleString()}</div>
+              <h3 class="font-semibold text-lg mt-1">${escapeHtml(it.title || (it.contact_email? it.contact_email : 'Anonymous'))}</h3>
+            </div>
+            <div class="text-xs text-gray-500">${escapeHtml(it.category || '')}</div>
+          </div>
+          <p class="text-gray-700 mt-2">${escapeHtml(it.description||'')}</p>
+        </div>
+        ${img? `<img src="${img}" class="w-28 h-28 object-cover rounded">` : ''}
+      `;
+      el('feed').appendChild(card);
+    });
+  }catch(e){ console.error(e); el('feed').innerHTML = '<div class="text-sm text-red-600">Error loading feed.</div>'; }
+}
 
-// Render Category Grid
-const catGrid = document.getElementById("categoryGrid");
-categories.forEach(cat => {
-  const card = document.createElement("div");
-  card.className = "border rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer";
-  card.dataset.category = cat.name;
-  card.innerHTML = `
-    <img src="${cat.img}" onerror="this.src='https://via.placeholder.com/400x300?text=${encodeURIComponent(cat.name)}'" class="h-32 w-full object-cover">
-    <div class="p-2 text-center font-medium">${cat.name}</div>`;
-  card.addEventListener("click", () => filterByCategory(cat.name, card));
-  catGrid.appendChild(card);
+function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+// Message form submit
+el('msgForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const status = el('msgStatus'); status.textContent='Posting...';
+  const payload = {
+    title: (el('fromName').value || 'Friend'),
+    category: 'Friendship',
+    budget_min: 0,
+    budget_max: 0,
+    location: '',
+    description: el('messageText').value,
+    contact_email: el('msgEmail').value || '',
+    contact_phone: '',
+    image_url: null,
+    status: 'open'
+  };
+  try{
+    const res = await fetch(`${REST}?apikey=${SUPABASE_KEY}`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY}, body:JSON.stringify(payload)});
+    const text = await res.text();
+    if(res.ok){ status.textContent='✅ Message shared!'; el('msgForm').reset(); loadFeed(); }
+    else{ status.innerHTML = '❌ Failed. '+escapeHtml(text); }
+  }catch(err){ console.error(err); status.textContent='❌ Network error'; }
 });
 
-// Fetch Requirements
-async function fetchListings(category = null) {
-  let url = `${REST_ENDPOINT}?select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
-  if (category) url = `${REST_ENDPOINT}?category=eq.${encodeURIComponent(category)}&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
-  const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY } });
-  const rows = await res.json();
-  renderListings(rows);
-}
-
-function renderListings(items) {
-  const c = document.getElementById('listings');
-  c.innerHTML = "";
-  if (items.length === 0) {
-    c.innerHTML = `<div class='text-sm text-gray-500'>No requirements found in this category.</div>`;
-    return;
-  }
-  items.forEach(it => {
-    const img = it.image_url && it.image_url.startsWith('http')
-      ? it.image_url
-      : `https://picsum.photos/seed/${encodeURIComponent(it.category || 'business')}/400/400`;
-    const d = document.createElement('div');
-    d.innerHTML = `
-      <a href="post.html?id=${it.id}" class="flex gap-3 bg-white border rounded p-3 items-start hover:bg-gray-50 transition">
-        <img src="${img}" class="w-20 h-20 object-cover rounded">
-        <div class="flex-1">
-          <h5 class="font-semibold">${it.title || ''}</h5>
-          <div class="text-xs text-gray-500 mb-1">₹${it.budget_min || '-'} - ${it.budget_max || '-'}</div>
-          <div class="text-sm text-gray-600">${(it.description || '').slice(0,120)}...</div>
-        </div>
-      </a>`;
-    c.appendChild(d);
-  });
-}
-
-// Filter by Category Click
-function filterByCategory(category, card) {
-  document.querySelectorAll("#categoryGrid div").forEach(c => c.classList.remove("category-active"));
-  card.classList.add("category-active");
-  fetchListings(category);
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-// Submit Form
-const form = document.getElementById('reqForm');
-const msg = document.getElementById('formMsg');
-
-form.addEventListener('submit', async (e) => {
+// Meme upload form
+el('memeForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
-  msg.textContent = "Uploading...";
-
+  const status = el('memeStatus'); status.textContent='Uploading...';
+  const file = el('memeImage').files[0];
   let imageUrl = null;
-  const file = document.getElementById('imageUpload').files[0];
-  if (file) {
-    const fileName = Date.now() + "_" + file.name;
-    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': file.type
-      },
-      body: file
-    });
-    if (uploadRes.ok) {
-      imageUrl = `${SUPABASE_URL}/storage/v1/object/public/requirements-images/${fileName}`;
-      console.log("✅ Image uploaded:", imageUrl);
-    }
+  if(file){
+    const fname = Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9.-]/g,'_');
+    try{
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${fname}`, {method:'POST', headers:{'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':file.type}, body:file});
+      if(up.ok){ imageUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${fname}`; }
+      else{ const t=await up.text(); status.innerHTML='❌ Upload failed: '+escapeHtml(t); return; }
+    }catch(err){ console.error(err); status.textContent='❌ Upload error'; return; }
   }
 
   const payload = {
-    title: document.getElementById('title').value || "Untitled",
-    category: document.getElementById('category').value || "General",
-    budget_min: Number(document.getElementById('budgetMin').value) || 0,
-    budget_max: Number(document.getElementById('budgetMax').value) || 0,
-    location: document.getElementById('location').value || "",
-    description: document.getElementById('description').value,
-    contact_email: document.getElementById('contactEmail').value,
-    contact_phone: document.getElementById('contactPhone').value || "",
-    image_url: imageUrl,
-    status: "open"
+    title: el('memeTitle').value || 'Meme', category:'Friendship', budget_min:0, budget_max:0, location:'', description: el('memeTitle').value || '', contact_email:'', contact_phone:'', image_url: imageUrl, status:'open'
   };
-
-  const res = await fetch(`${REST_ENDPOINT}?apikey=${SUPABASE_KEY}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + SUPABASE_KEY
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (res.ok) {
-    msg.textContent = "✅ Requirement posted successfully!";
-    form.reset();
-    setTimeout(fetchListings, 1000);
-  } else {
-    msg.textContent = "❌ Error posting requirement.";
-  }
+  try{
+    const res = await fetch(`${REST}?apikey=${SUPABASE_KEY}`, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY}, body:JSON.stringify(payload)});
+    const text = await res.text();
+    if(res.ok){ status.textContent='✅ Meme posted!'; el('memeForm').reset(); loadFeed(); }
+    else{ status.innerHTML='❌ Failed to post: '+escapeHtml(text); }
+  }catch(err){ console.error(err); status.textContent='❌ Network error'; }
 });
 
-// Initialize
-fetchListings();
+el('refreshBtn').addEventListener('click', ()=>loadFeed());
+
+// initial
+loadFeed();
 </script>
 </body>
 </html>
