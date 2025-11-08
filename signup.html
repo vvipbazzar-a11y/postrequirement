@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup - MujhseDostiKaroge 💖</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-pink-50 text-gray-800">
+  <div class="max-w-md mx-auto mt-12 bg-white rounded-xl shadow-lg p-6">
+    <h1 class="text-2xl font-bold text-center text-pink-600 mb-4">Create Account 💞</h1>
+
+    <form id="signupForm" class="space-y-3">
+      <input id="username" placeholder="Username" required class="border w-full px-3 py-2 rounded">
+      <input id="email" type="email" placeholder="Email" required class="border w-full px-3 py-2 rounded">
+      <input id="password" type="password" placeholder="Password" required class="border w-full px-3 py-2 rounded">
+      <textarea id="bio" placeholder="Tell something about yourself..." class="border w-full px-3 py-2 rounded"></textarea>
+      <input id="profilePic" type="file" accept="image/*" class="border w-full px-3 py-2 rounded">
+      <button type="submit" class="bg-pink-600 text-white py-2 px-4 rounded w-full">Sign Up</button>
+      <div id="status" class="text-sm text-center mt-2"></div>
+    </form>
+
+    <p class="text-center text-sm mt-4">Already have an account? <a href="login.html" class="text-pink-600 underline">Login</a></p>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+const USERS_API = `${SUPABASE_URL}/rest/v1/users`;
+const BUCKET = 'profile-pics';
+
+function el(id){ return document.getElementById(id); }
+
+el('signupForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const status = el('status');
+  status.textContent = 'Creating your account...';
+
+  const file = el('profilePic').files[0];
+  let imageUrl = null;
+
+  if(file){
+    const fname = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    try {
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${fname}`, {
+        method: 'PUT',
+        headers: {'Authorization':'Bearer ' + SUPABASE_KEY, 'Content-Type':file.type},
+        body: file
+      });
+      if(up.ok){
+        imageUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${fname}`;
+      } else {
+        status.textContent = '❌ Image upload failed';
+        return;
+      }
+    } catch(err){ status.textContent = '❌ Upload error'; return; }
+  }
+
+  const payload = {
+    username: el('username').value,
+    email: el('email').value,
+    password: el('password').value,
+    bio: el('bio').value,
+    profile_image: imageUrl
+  };
+
+  try {
+    const res = await fetch(`${USERS_API}?apikey=${SUPABASE_KEY}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Authorization':'Bearer '+SUPABASE_KEY},
+      body: JSON.stringify(payload)
+    });
+    if(res.ok){
+      status.textContent = '✅ Account created!';
+      localStorage.setItem('user', JSON.stringify(payload));
+      setTimeout(()=>{ window.location.href = 'profile.html'; }, 1000);
+    } else {
+      const t = await res.text();
+      status.textContent = '❌ Signup failed: ' + t;
+    }
+  } catch(err){
+    status.textContent = '❌ Network error';
+  }
+});
+</script>
+</body>
+</html>
