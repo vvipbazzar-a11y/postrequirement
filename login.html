@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - MujhseDostiKaroge 💖</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{font-family:'Poppins',sans-serif;}</style>
+</head>
+<body class="bg-pink-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
+    <h1 class="text-3xl text-center font-bold text-pink-600 mb-6">Welcome Back 💞</h1>
+    
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Username</label>
+        <input id="username" type="text" required class="border rounded w-full px-3 py-2 focus:ring-2 focus:ring-pink-400">
+      </div>
+
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Password</label>
+        <input id="password" type="password" required class="border rounded w-full px-3 py-2 focus:ring-2 focus:ring-pink-400">
+      </div>
+
+      <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 w-full rounded-lg transition">Login</button>
+      <div id="status" class="text-sm text-center mt-2 text-gray-700"></div>
+    </form>
+
+    <p class="text-center text-sm mt-4">Don't have an account?
+      <a href="signup.html" class="text-pink-600 hover:underline">Sign Up</a>
+    </p>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const status = document.getElementById('status');
+  status.textContent = 'Checking credentials...';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/users?username=eq.${encodeURIComponent(username)}&select=*`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const data = await res.json();
+
+    if(data.length === 0) {
+      status.textContent = '❌ No account found with this username.';
+      return;
+    }
+
+    const user = data[0];
+    if(user.password === password) {
+      localStorage.setItem('user', JSON.stringify(user));
+      status.textContent = '✅ Login successful!';
+      setTimeout(()=>{ window.location.href = 'profile.html'; }, 1000);
+    } else {
+      status.textContent = '❌ Incorrect password.';
+    }
+  } catch(err) {
+    status.textContent = '❌ Network error.';
+  }
+});
+</script>
+</body>
+</html>
