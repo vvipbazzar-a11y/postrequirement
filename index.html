@@ -28,8 +28,8 @@
   <!-- LEFT SECTION -->
   <section>
     <h2 class="text-2xl font-bold mb-4">Browse by Category</h2>
-    <div id="categoryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
-      <!-- Categories dynamically loaded -->
+    <div id="categoryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10" aria-hidden="false">
+      <!-- Categories will be rendered here -->
     </div>
 
     <h2 class="text-3xl font-bold">Post your requirement. Get responses fast.</h2>
@@ -90,13 +90,12 @@
 </main>
 
 <script>
+/* ---------- CONFIG ---------- */
 const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
 const REST_ENDPOINT = SUPABASE_URL + "/rest/v1/requirements";
 
-document.getElementById('year').innerText = new Date().getFullYear();
-
-// ---- CATEGORY CARDS ----
+/* ---------- UI DATA ---------- */
 const categories = [
   { name: "IT & Software", img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" },
   { name: "Design", img: "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=400&q=80" },
@@ -106,125 +105,177 @@ const categories = [
   { name: "Manufacturing", img: "https://images.unsplash.com/photo-1581092787766-5ef1b2ab1b36?auto=format&fit=crop&w=400&q=80" }
 ];
 
-function renderCategories() {
-  const c = document.getElementById("categoryGrid");
-  categories.forEach(cat => {
-    const div = document.createElement("div");
-    div.className = "border rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer";
-    div.innerHTML = `
-      <img src="${cat.img}" class="h-32 w-full object-cover">
-      <div class="p-2 text-center font-medium">${cat.name}</div>`;
-    div.addEventListener("click", () => filterByCategory(cat.name));
-    c.appendChild(div);
+/* ---------- HELPERS ---------- */
+function qs(sel){return document.querySelector(sel);}
+function qsa(sel){return Array.from(document.querySelectorAll(sel));}
+function createCatCard(cat){
+  const div = document.createElement("div");
+  div.className = "border rounded-lg overflow-hidden hover:shadow-lg transition cursor-pointer";
+  div.dataset.cat = cat.name;
+  div.innerHTML = `
+    <img src="${cat.img}" class="h-32 w-full object-cover">
+    <div class="p-2 text-center font-medium">${cat.name}</div>
+  `;
+  return div;
+}
+
+/* ---------- RENDER & EVENTS ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  qs('#year').innerText = new Date().getFullYear();
+
+  // render categories
+  const cg = qs('#categoryGrid');
+  categories.forEach(cat => cg.appendChild(createCatCard(cat)));
+
+  // Event delegation: single handler for category clicks
+  cg.addEventListener('click', (ev) => {
+    const card = ev.target.closest('[data-cat]');
+    if(!card) return;
+    // UI highlight
+    qsa('#categoryGrid > div').forEach(d => d.classList.remove('ring-2','ring-blue-400'));
+    card.classList.add('ring-2','ring-blue-400');
+
+    const category = card.dataset.cat;
+    // set the category select value in the form too
+    const sel = qs('#category');
+    if(sel) sel.value = category;
+    // fetch filtered listings
+    fetchListings(category);
+    // smooth scroll to listings (right column)
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
-}
 
-// ---- FETCH REQUIREMENTS ----
-async function fetchListings(category = null) {
+  // initial fetch (all)
+  fetchListings();
+
+  // form submit handler
+  qs('#reqForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = qs('#formMsg');
+    msg.textContent = "Uploading...";
+
+    // collect file
+    let imageUrl = null;
+    const file = qs('#imageUpload').files[0];
+    if (file) {
+      const fileName = Date.now() + "_" + file.name;
+      try {
+        const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Content-Type': file.type
+          },
+          body: file
+        });
+        if (uploadRes.ok) {
+          imageUrl = `${SUPABASE_URL}/storage/v1/object/public/requirements-images/${fileName}`;
+          console.log("✅ Image uploaded:", imageUrl);
+        } else {
+          const t = await uploadRes.text();
+          console.error("Upload failed:", t);
+          msg.textContent = "❌ Image upload failed. Try again.";
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "❌ Image upload error.";
+        return;
+      }
+    }
+
+    // prepare payload (ensure types)
+    const payload = {
+      title: qs('#title').value || "Untitled",
+      category: qs('#category').value || "General",
+      budget_min: Number(qs('#budgetMin').value) || 0,
+      budget_max: Number(qs('#budgetMax').value) || 0,
+      location: qs('#location').value || "",
+      description: qs('#description').value || "",
+      contact_email: qs('#contactEmail').value || "",
+      contact_phone: qs('#contactPhone').value || "",
+      image_url: imageUrl,
+      status: "open"
+    };
+
+    // POST to Supabase (send apikey in URL to avoid header blocking)
+    try {
+      const res = await fetch(`${REST_ENDPOINT}?apikey=${SUPABASE_KEY}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + SUPABASE_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+      const text = await res.text();
+      console.log("POST:", res.status, text);
+      if (res.ok) {
+        msg.textContent = "✅ Requirement posted successfully!";
+        qs('#reqForm').reset();
+        // refresh listings (small delay)
+        setTimeout(() => fetchListings(payload.category), 800);
+      } else {
+        msg.innerHTML = `❌ Error posting requirement. <small style="color:#a00;display:block">${text}</small>`;
+      }
+    } catch (err) {
+      console.error(err);
+      msg.textContent = "❌ Network error.";
+    }
+
+  });
+
+}); // DOMContentLoaded
+
+/* ---------- FETCH + RENDER LISTINGS ---------- */
+async function fetchListings(category = null){
   let url = `${REST_ENDPOINT}?select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
-  if (category) url = `${REST_ENDPOINT}?category=eq.${encodeURIComponent(category)}&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
-
-  const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY } });
-  const rows = await res.json();
-  renderListings(rows);
+  if(category){
+    // use eq.<value> form; encode properly
+    url = `${REST_ENDPOINT}?category=eq.${encodeURIComponent(category)}&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`;
+  }
+  try {
+    const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY } });
+    const rows = await res.json();
+    renderListings(rows || []);
+  } catch(err){
+    console.error("Fetch listings error:", err);
+    qs('#listings').innerHTML = `<div class="text-sm text-red-600">Error loading listings.</div>`;
+  }
 }
 
-function renderListings(items) {
-  const c = document.getElementById('listings');
+function renderListings(items){
+  const c = qs('#listings');
   c.innerHTML = "";
-  if (items.length === 0) {
-    c.innerHTML = `<div class='text-sm text-gray-500'>No requirements found in this category.</div>`;
+  if(!items || items.length === 0){
+    c.innerHTML = `<div class='text-sm text-gray-500'>No requirements found.</div>`;
     return;
   }
   items.forEach(it => {
-    const img = it.image_url && it.image_url.startsWith('http')
-      ? it.image_url
-      : `https://source.unsplash.com/400x400/?${it.category || 'business'}`;
-    const d = document.createElement('div');
-    d.innerHTML = `
-      <a href="post.html?id=${it.id}" class="flex gap-3 bg-white border rounded p-3 items-start hover:bg-gray-50 transition">
+    const img = it.image_url && it.image_url.startsWith('http') ? it.image_url : `https://source.unsplash.com/400x400/?${encodeURIComponent(it.category||'business')}`;
+    const wrapper = document.createElement('div');
+    wrapper.className = "bg-white border rounded";
+    wrapper.innerHTML = `
+      <a href="post.html?id=${it.id}" class="flex gap-3 p-3 items-start hover:bg-gray-50 transition no-underline">
         <img src="${img}" class="w-20 h-20 object-cover rounded">
         <div class="flex-1">
-          <h5 class="font-semibold">${it.title || ''}</h5>
-          <div class="text-xs text-gray-500 mb-1">₹${it.budget_min || '-'} - ${it.budget_max || '-'}</div>
-          <div class="text-sm text-gray-600">${(it.description || '').slice(0,120)}...</div>
+          <div class="flex justify-between items-start">
+            <h5 class="font-semibold text-black">${escapeHtml(it.title||'Untitled')}</h5>
+            <div class="text-xs text-gray-500">₹${it.budget_min || '-'} - ${it.budget_max || '-'}</div>
+          </div>
+          <div class="text-sm text-gray-600 mt-1">${escapeHtml((it.description||'').slice(0,140))}${(it.description && it.description.length>140? '...':'')}</div>
+          <div class="mt-2 text-xs text-gray-500 flex gap-2">
+            <span class="px-2 py-1 bg-gray-100 rounded">${escapeHtml(it.category||'Other')}</span>
+          </div>
         </div>
-      </a>`;
-    c.appendChild(d);
+      </a>
+    `;
+    c.appendChild(wrapper);
   });
 }
 
-function filterByCategory(category) {
-  fetchListings(category);
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-const form = document.getElementById('reqForm');
-const msg = document.getElementById('formMsg');
-
-// ---- FORM SUBMISSION ----
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  msg.textContent = "Uploading...";
-  
-  let imageUrl = null;
-  const file = document.getElementById('imageUpload').files[0];
-
-  if (file) {
-    const fileName = Date.now() + "_" + file.name;
-
-    // ✅ Correct upload path
-    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/requirements-images/${fileName}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': file.type
-      },
-      body: file
-    });
-
-    if (uploadRes.ok) {
-      // ✅ Correct public URL
-      imageUrl = `${SUPABASE_URL}/storage/v1/object/public/requirements-images/${fileName}`;
-      console.log("✅ Image uploaded successfully:", imageUrl);
-    } else {
-      console.error("❌ Upload failed:", await uploadRes.text());
-    }
-  }
-
-  const payload = {
-    title: document.getElementById('title').value || "Untitled",
-    category: document.getElementById('category').value || "General",
-    budget_min: Number(document.getElementById('budgetMin').value) || 0,
-    budget_max: Number(document.getElementById('budgetMax').value) || 0,
-    location: document.getElementById('location').value || "",
-    description: document.getElementById('description').value,
-    contact_email: document.getElementById('contactEmail').value,
-    contact_phone: document.getElementById('contactPhone').value || "",
-    image_url: imageUrl,
-    status: "open"
-  };
-
-  const res = await fetch(`${REST_ENDPOINT}?apikey=${SUPABASE_KEY}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + SUPABASE_KEY
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (res.ok) {
-    msg.textContent = "✅ Requirement posted successfully!";
-    form.reset();
-    setTimeout(fetchListings, 1000);
-  } else {
-    msg.textContent = "❌ Error posting requirement.";
-  }
-});
-
-renderCategories();
-fetchListings();
+/* ---------- UTIL ---------- */
+function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 </script>
 </body>
 </html>
