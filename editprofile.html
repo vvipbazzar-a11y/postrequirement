@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Edit Profile — MujhseDostiKaroge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{font-family:Inter,system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <header class="bg-pink-600 text-white p-4">
+    <div class="max-w-5xl mx-auto flex justify-between">
+      <h1 class="font-bold">Edit Profile</h1>
+      <a href="profile.html" class="bg-white text-pink-600 px-3 py-1 rounded">Back</a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-6">
+    <div class="bg-white p-5 rounded shadow max-w-md">
+      <h2 class="text-lg font-semibold mb-3">Update your profile</h2>
+      <form id="editForm" class="space-y-3">
+        <div>
+          <label class="text-sm block mb-1">Username (cannot change)</label>
+          <input id="username" disabled class="border w-full px-3 py-2 rounded bg-gray-100">
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Email</label>
+          <input id="email" class="border w-full px-3 py-2 rounded">
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Bio</label>
+          <textarea id="bio" rows="3" class="border w-full px-3 py-2 rounded"></textarea>
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Profile Photo</label>
+          <input id="photo" type="file" accept="image/*" class="border w-full px-3 py-2 rounded">
+        </div>
+        <button class="bg-pink-600 text-white px-4 py-2 rounded">Save Changes</button>
+        <div id="status" class="text-sm mt-2 text-gray-700"></div>
+      </form>
+    </div>
+  </main>
+
+<script>
+const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+const USERS_API = `${SUPABASE_URL}/rest/v1/users`;
+const BUCKET = 'requirements-images'; // your bucket
+
+function getUser(){ try{return JSON.parse(localStorage.getItem('user'))}catch(e){return null} }
+const user = getUser();
+
+if(!user){ alert('Please login'); window.location.href='login.html'; }
+
+document.getElementById('username').value = user.username || '';
+document.getElementById('email').value = user.email || '';
+document.getElementById('bio').value = user.bio || '';
+
+document.getElementById('editForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const status = document.getElementById('status');
+  status.textContent = 'Saving...';
+
+  let imageUrl = user.profile_image || null;
+  const file = document.getElementById('photo').files[0];
+  if(file){
+    const fname = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.-]/g,'_');
+    try{
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${fname}`, {
+        method: 'PUT',
+        headers: {'Authorization':'Bearer '+SUPABASE_KEY, 'Content-Type': file.type},
+        body: file
+      });
+      if(up.ok) imageUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${fname}`;
+      else { status.textContent='Image upload failed'; return; }
+    }catch(err){ status.textContent='Upload error'; return; }
+  }
+
+  // Update user row — match on username
+  const payload = { email: document.getElementById('email').value, bio: document.getElementById('bio').value, profile_image: imageUrl };
+  try{
+    const res = await fetch(`${USERS_API}?username=eq.${encodeURIComponent(user.username)}&apikey=${SUPABASE_KEY}`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
+      body: JSON.stringify(payload)
+    });
+    if(res.ok){
+      // update localStorage copy
+      const newUser = {...user, ...payload};
+      localStorage.setItem('user', JSON.stringify(newUser));
+      status.textContent = '✅ Profile updated';
+      setTimeout(()=>{ window.location.href='profile.html'; },800);
+    } else {
+      const t = await res.text();
+      status.textContent = '❌ Update failed: ' + t;
+    }
+  }catch(err){ status.textContent='❌ Network error'; }
+});
+</script>
+</body>
+</html>
