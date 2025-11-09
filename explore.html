@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Explore — MujhseDostiKaroge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{font-family:Inter,system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <header class="bg-pink-600 text-white p-4">
+    <div class="max-w-5xl mx-auto flex justify-between">
+      <h1 class="font-bold">Explore</h1>
+      <div><a href="index.html" class="bg-white text-pink-600 px-3 py-1 rounded">Back</a></div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-6">
+    <div class="flex gap-4 mb-4">
+      <button id="recentBtn" class="px-3 py-1 bg-white rounded shadow">Recent</button>
+      <button id="withImageBtn" class="px-3 py-1 bg-white rounded shadow">With Image</button>
+    </div>
+
+    <div id="exploreFeed" class="space-y-3"></div>
+  </main>
+
+<script>
+const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+const REST = SUPABASE_URL + "/rest/v1/requirements";
+
+function escape(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+const feed = document.getElementById('exploreFeed');
+
+async function loadRecent(){
+  feed.innerHTML = 'Loading...';
+  const res = await fetch(`${REST}?select=*&order=created_at.desc&limit=50&apikey=${SUPABASE_KEY}`, { headers: {'Authorization':'Bearer '+SUPABASE_KEY} });
+  const data = await res.json();
+  render(data);
+}
+
+async function loadWithImage(){
+  feed.innerHTML = 'Loading...';
+  const res = await fetch(`${REST}?select=*&image_url=is.not.null&order=created_at.desc&limit=50&apikey=${SUPABASE_KEY}`, { headers: {'Authorization':'Bearer '+SUPABASE_KEY} });
+  const data = await res.json();
+  render(data);
+}
+
+function render(items){
+  if(!items || items.length===0){ feed.innerHTML = '<div class="text-sm text-gray-500">No posts</div>'; return; }
+  feed.innerHTML = '';
+  items.forEach(it=>{
+    const img = it.image_url ? `<img src="${it.image_url}" class="w-28 h-28 object-cover rounded">` : '';
+    feed.innerHTML += `<div class="bg-white p-3 rounded shadow flex gap-3">
+      <div class="flex-1">
+        <div class="flex justify-between items-start">
+          <div><b>${escape(it.title||'Friend')}</b></div>
+          <div class="text-xs text-gray-500">${new Date(it.created_at).toLocaleString()}</div>
+        </div>
+        <p class="mt-1 text-gray-700">${escape(it.description||'')}</p>
+      </div>
+      ${img}
+    </div>`;
+  });
+}
+
+document.getElementById('recentBtn').addEventListener('click', loadRecent);
+document.getElementById('withImageBtn').addEventListener('click', loadWithImage);
+
+loadRecent();
+</script>
+</body>
+</html>
