@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Posts — MujhseDostiKaroge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{font-family:Inter,system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <header class="bg-pink-600 text-white p-4">
+    <div class="max-w-5xl mx-auto flex justify-between items-center">
+      <h1 class="font-bold">💞 MujhseDostiKaroge — My Posts</h1>
+      <div>
+        <a href="index.html" class="bg-white text-pink-600 px-3 py-1 rounded">Dashboard</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-6">
+    <h2 class="text-xl font-semibold mb-3">Your posts</h2>
+    <div id="status" class="text-sm text-gray-600 mb-3"></div>
+    <div id="list" class="space-y-3"></div>
+  </main>
+
+<script>
+const SUPABASE_URL = "https://knmynsacagbrfyxlvsou.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubXluc2FjYWdicmZ5eGx2c291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1MjU1MzMsImV4cCI6MjA3ODEwMTUzM30.5Sk6ktmFEoKxpkPexnbwaqEvCBvEZbA8HlKYYltWSMA";
+const REST = SUPABASE_URL + "/rest/v1/requirements";
+
+function getUser(){ try{ return JSON.parse(localStorage.getItem('user')) }catch(e){return null} }
+const user = getUser();
+const listEl = document.getElementById('list');
+const statusEl = document.getElementById('status');
+
+if(!user){ statusEl.textContent = 'You are not logged in. Please login first.'; }
+else { loadMyPosts(); }
+
+async function loadMyPosts(){
+  statusEl.textContent = 'Loading your posts...';
+  try{
+    // fetch posts where title equals username
+    const res = await fetch(`${REST}?title=eq.${encodeURIComponent(user.username)}&select=*&order=created_at.desc&apikey=${SUPABASE_KEY}`, {
+      headers: { 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const items = await res.json();
+    statusEl.textContent = '';
+    if(!items || items.length===0){ listEl.innerHTML = '<div class="text-sm text-gray-500">No posts yet.</div>'; return; }
+    listEl.innerHTML = '';
+    items.forEach(it=>{
+      const card = document.createElement('div');
+      card.className = 'bg-white p-3 rounded shadow flex gap-3 items-start';
+      card.innerHTML = `
+        <div class="flex-1">
+          <div class="flex justify-between items-start">
+            <h3 class="font-semibold">${escape(it.title)}</h3>
+            <div class="text-xs text-gray-500">${new Date(it.created_at).toLocaleString()}</div>
+          </div>
+          <p class="text-gray-700 mt-2">${escape(it.description||'')}</p>
+        </div>
+        ${it.image_url? `<img src="${it.image_url}" class="w-20 h-20 object-cover rounded">` : ''}
+        <div class="flex flex-col gap-2">
+          <button data-id="${it.id}" class="deleteBtn bg-red-500 text-white px-3 py-1 rounded text-sm">Delete</button>
+        </div>
+      `;
+      listEl.appendChild(card);
+    });
+
+    // attach delete handlers
+    document.querySelectorAll('.deleteBtn').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        const id = btn.getAttribute('data-id');
+        if(!confirm('Delete this post?')) return;
+        btn.disabled = true; btn.textContent = 'Deleting...';
+        try{
+          const del = await fetch(`${REST}?id=eq.${id}`, { method: 'DELETE', headers: {'apikey': SUPABASE_KEY,'Authorization': 'Bearer '+SUPABASE_KEY} });
+          if(del.ok){ btn.textContent = 'Deleted'; loadMyPosts(); }
+          else { alert('Delete failed'); btn.disabled=false; btn.textContent='Delete'; }
+        }catch(err){ alert('Network error'); btn.disabled=false; btn.textContent='Delete'; }
+      });
+    });
+
+  }catch(err){ statusEl.textContent = 'Error loading posts'; console.error(err); }
+}
+
+function escape(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+</script>
+</body>
+</html>
