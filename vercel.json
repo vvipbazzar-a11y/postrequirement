@@ -4,3 +4,12 @@
   ],
   "cleanUrls": true
 }
+{
+  "builds": [
+    { "src": "*.html", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/$1" }
+  ],
+  "cleanUrls": true
+}
